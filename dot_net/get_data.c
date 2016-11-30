@@ -131,8 +131,8 @@ public static string GetParagraphFromTextDocBasedonHeadingText(String filename, 
       counter++;
         if (inHeader) {
             // check e haven't reached end of paragraph in below header, if so finish
-            if (line=="end of section/new heding") // todo, how do we figure this out
-            { break; }
+            match = reg_for_next_heading.Match(line);
+            if (!match.Success) { break; }
             paragraph=paragraph + System.Environment.NewLine + line;
             continue;
         }
