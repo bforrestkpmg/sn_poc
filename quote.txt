@@ -1,0 +1,48 @@
+﻿2	Quote Costs
+
+The following pricing table details the existing Telstra Gateway changes and proposed new Internet Gateway solution components and is provided in order for Qantas to assess for approval.
+
+Where possible, it uses agreed RU’s or formulas as defined in the Telstra Qantas DNV MSA agreement.
+
+It should be noted that all infrastructure costs are calculated over the useful life of the equipment which in this case is 8 years.
+
+It should be noted that all service costs for each service are included for the life of the current DNV Contract following activation of new platform, which is currently expected to be 48 months.
+
+
+Pricing Table Notes: 
+
+1.	A Contract Variation will be executed between the parties to add the incremental charge to the existing ‘TWS Service 3 – Data Centre to Data Centre’ Resource Unit
+2.	This solution will be delivered under the T&Cs of the existing DNV agreement between Qantas and Telstra. A contract variation will be required to add some new Resource Units (price points), otherwise the service model will be as per the existing agreement
+
+22
+
+Once Off Charges
+
+
+Consultancy Services ~ GST Excl	Units	Unit Price	Extended Price
+
+
+Proramme Support / Imlementation Da - 8 hours
+	5	1135.68	$5,678.40
+
+Ongoing Resource Unit Charges
+Additional Resource Units -GST Excl	Quanity	RU Price(per month)	Unit Extended Price	Total Contract Value
+Firewall-Infrastructure-New-Complex (ASA5585)	2	$     1,837.33 $   3,674.66	$  176,383.68
+Firewall-Support Comlex 	2	$     324.44	$   648.88	$  31,146.24
+Firewall-Infrastructure-New-Complex (ASA5585)	2	$    - $   -	$  -
+Firewall-Infrastructure-New-Complex (ASA5585)	2	$     1,837.33 $   3,674.66	$  176,383.68
+Firewall-Support Comlex 	2	$     324.44	$   648.88	$  31,146.24
+Firewall-Infrastructure-New-Complex (Cat4506)	$    470.97 $   1,883.88	$  90,426.24
+
+// others to try to start
+
+2	Quote Costs
+3.0	Quote Costs
+2	Quote Costs
+^Quote Costs$
+
+// Finish off with
+3	Revision List
+3 Revision List
+Revision List
+2.0 Revision List

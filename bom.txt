@@ -1,0 +1,32 @@
+﻿Appendix 1:  Bill of Materials 
+Internet/Core Firewall and DMZ/Services Architecture
+New Equipment
+
+Line Number	Item Name	Description	Quantity	List Price - Each AUD$
+1.0	WS-C4506-E	Cat4500 E-Series 6-Slot Chassis fan no ps	2	$7,461.75
+1.1 WS-X4748-RJ45-E	Catalyst 4500 E-Series 48-Port10/100/1000 Non-Bl;ocking	2	$10,449.44
+		
+2.0	WS-c4506-E	Cat4500 E-Series 6-Slot Chassis fan no ps	2	$7,461.75
+2.1	WS-X4748-RJ45-E	Cataqlyst 4500 E-Series 48-Port 10/100/1000 Non-Blcoking	2	$7,461.75
+
+
+Appendix 2 - Existing Internet Gateway Bandwidth Utilisation
+
+The following gateway bandwidth utilisation reports have been generated as charts representing the period 26 July through 25 August 2014. 
+
+
+// others to try to start
+
+Appendix 1 Bill of Materials 
+Appendix 2:  Bill of Materials 
+Appendix 1-  Bill of Materials 
+5.0 Bill of Materials
+Bill of Materials
+
+finish off with
+
+Appendix 2 – Blah
+Appendix 2: Blah
+Appendix 3: Blah
+Appendix 3 Blah
+3 Blah
