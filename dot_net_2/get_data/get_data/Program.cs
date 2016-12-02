@@ -24,14 +24,14 @@ namespace Add_Function
         {
             parse_args(args);
 
-            //string downloaded_file=DownloadFile(args[1]);
-            //System.Console.WriteLine("Downloaded: " + downloaded_file);
+            string downloaded_file = DownloadFile(args[0]);
+            op_text("Downloaded: " + downloaded_file);
 
-            //string txt_filename=ConvertWordToText(downloaded_file);
+            //string txt_filename = ConvertWordToText(downloaded_file);
             //System.Console.WriteLine("Converted to text: " + txt_filename);
 
-            //string paragraph=GetParagraphFromTextDocBasedonHeadingText(txt_filename);
-            //string response=GenerateXMLOutput(paragraph, null);
+            //string paragraph = GetParagraphFromTextDocBasedonHeadingText(txt_filename);
+            //string response = GenerateXMLOutput(paragraph, null);
             //System.Console.WriteLine(response);
 
         }//END   Main
@@ -50,12 +50,15 @@ namespace Add_Function
                 Environment.Exit(0);
             }
             // have we specified test mode we genereate specific output based on file name
-            if ((!String.IsNullOrEmpty(args[2])) && (args[2].Equals("-test")))
+            if (args.Length >= 3)
             {
-                String op = "";
-                op = output_test_responses_based_on_file_name(args[0], args[1]);
-                op_text(op);
-                Environment.Exit(0);
+                if ((!String.IsNullOrEmpty(args[2])) && (args[2].Equals("-test")))
+                {
+                    String op = "";
+                    op = output_test_responses_based_on_file_name(args[0], args[1]);
+                    op_text(op);
+                    Environment.Exit(0);
+                }
             }
         }
 
@@ -164,37 +167,51 @@ public static void ExitError(String err)
 // returns unique/temp filename with extension provided
 public static string GetTempFile(string ext)
 {
-string fileName = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ext;
-return fileName;
+    string fileName = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ext;
+    return fileName;
 }
 //returns extension
 public static string GetExt(String filename)
 {
     return Path.GetExtension(filename);
 }
-//returns temp file name of downloadedfile
+private static void DoDownloadFile(string webUrl, ICredentials credentials, string fileRelativeUrl, string localfile)
+{
+    using (var client = new WebClient())
+    {
+        client.Headers.Add("X-FORMS_BASED_AUTH_ACCEPTED", "f");
+        client.Headers.Add("User-Agent: Other");
+        client.Credentials = credentials;
+        String s = webUrl + '/' + fileRelativeUrl;
+        try
+        {
+            client.DownloadFile(webUrl + '/' + fileRelativeUrl, localfile);
+        }
+        catch (WebException wex)
+        {
+            if (((HttpWebResponse)wex.Response).StatusCode == HttpStatusCode.NotFound)
+            {
+                ExitError("404 trying to get file: " + s);
+            }
+        }
+    }
+
+}
+
 // TODO check this works with username password for http authentication
 public static string DownloadFile(String urlfilename)
 {
-    String tmp_file="";
+    String tmp_file = "";
     // for our test server username and password are part of http login
     // TODO make these from environment variables
-    String username = "bforrest@kpmg.com.au";
-    String password = "mypassw0rd+";
-    // this should be passed into as command line but for testing...
-    //String URL = "https://sntestportal.portalfront.com";
-
-    using (WebClient client = new WebClient()) {
-            client.Credentials = new NetworkCredential(username, password);
-            try {
-                tmp_file=GetTempFile(GetExt(urlfilename));
-                client.DownloadFile(urlfilename, @tmp_file);
-            }
-            catch {
-                ExitError("DownloadFile failed.");
-            }
-            return tmp_file;
-        }
+    const String username = "bforrest@kpmg.com.au";
+    const String password = "mypassw0rd+";
+    const String URL = "https://sntestportal.portalfront.com/Shared%20Documents";
+    tmp_file = GetTempFile(".doc");
+    var client = new WebClient();
+    client.Credentials = new NetworkCredential(username, password);
+    DoDownloadFile(URL, client.Credentials, urlfilename, tmp_file);
+    return (tmp_file);
 }
 
 
