@@ -1,4 +1,4 @@
-
+/*
 // use this
 // https://code.msdn.microsoft.com/office/file-from-SharePoint-Online-cc418dba
 //
@@ -201,7 +201,7 @@ public static string GetParagraphFromTextDocBasedonHeadingText(String filename, 
    file.Close();
    return(paragraph);
 }
-
+*/
 
 
 // approach
@@ -210,8 +210,10 @@ public static string GetParagraphFromTextDocBasedonHeadingText(String filename, 
 // download file
 // open file and search for heading
 
-class MainClass
-    {
+using System;
+namespace Main
+{
+    class MainClass {
         static void parse_args(args)
         {
             if (args.Length < 2) {
@@ -220,23 +222,25 @@ class MainClass
             }
             // have we specified test mode we genereate specific output based on file name
             if ( (!string.lsNullOrEmpty(args[2])) && (args[2].Equals("-test") ) {
-                output_test_responses_based_on_file_name(arg[0]);
+               // output_test_responses_based_on_file_name(arg[0]);
                 Environment.Exit(0);
             }
         }
-        static int Main(string[] args)
+      //static int Main(string[] args)
+        static void Main()
         {
             parse_args(args);
-            string downloaded_file=DownloadFile(args[1]);
-            System.Console.WriteLine("Downloaded: " + downloaded_file);
+            //string downloaded_file=DownloadFile(args[1]);
+            //System.Console.WriteLine("Downloaded: " + downloaded_file);
 
-            string txt_filename=ConvertWordToText(downloaded_file);
-            System.Console.WriteLine("Converted to text: " + txt_filename);
+            //string txt_filename=ConvertWordToText(downloaded_file);
+            //System.Console.WriteLine("Converted to text: " + txt_filename);
 
-            string paragraph=GetParagraphFromTextDocBasedonHeadingText(txt_filename);
-            string response=GenerateXMLOutput(paragraph, null);
-            System.Console.WriteLine(response);
+            //string paragraph=GetParagraphFromTextDocBasedonHeadingText(txt_filename);
+            //string response=GenerateXMLOutput(paragraph, null);
+            //System.Console.WriteLine(response);
 
             return 0;
         } // Main
-    } // class MainClass
+    } // class 
+} // namespace
