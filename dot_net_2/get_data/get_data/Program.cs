@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.IO;
+using System.Net;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
@@ -11,9 +14,25 @@ namespace Add_Function
     class Program
     {
 
+
+        // approach
+        // check args (url/file and heading name)
+        // create temporary file name
+        // download file
+        // open file and search for heading
         static void Main(String[] args)
         {
             parse_args(args);
+
+            //string downloaded_file=DownloadFile(args[1]);
+            //System.Console.WriteLine("Downloaded: " + downloaded_file);
+
+            //string txt_filename=ConvertWordToText(downloaded_file);
+            //System.Console.WriteLine("Converted to text: " + txt_filename);
+
+            //string paragraph=GetParagraphFromTextDocBasedonHeadingText(txt_filename);
+            //string response=GenerateXMLOutput(paragraph, null);
+            //System.Console.WriteLine(response);
 
         }//END   Main
 
@@ -130,6 +149,122 @@ namespace Add_Function
             return r; 
 
         }  // output_test_responses_based_on_file_name
+
+
+        
+
+public static void ExitError(String err)
+{
+    String e=GenerateXMLOutput("", err);
+    System.Console.WriteLine(e);
+    Environment.Exit(1);
+}
+
+// TODO error check  the creation
+// returns unique/temp filename with extension provided
+public static string GetTempFile(string ext)
+{
+string fileName = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ext;
+return fileName;
+}
+//returns extension
+public static string GetExt(String filename)
+{
+    return Path.GetExtension(filename);
+}
+//returns temp file name of downloadedfile
+// TODO check this works with username password for http authentication
+public static string DownloadFile(String urlfilename)
+{
+    String tmp_file="";
+    // for our test server username and password are part of http login
+    // TODO make these from environment variables
+    String username = "bforrest@kpmg.com.au";
+    String password = "mypassw0rd+";
+    // this should be passed into as command line but for testing...
+    //String URL = "https://sntestportal.portalfront.com";
+
+    using (WebClient client = new WebClient()) {
+            client.Credentials = new NetworkCredential(username, password);
+            try {
+                tmp_file=GetTempFile(GetExt(urlfilename));
+                client.DownloadFile(urlfilename, @tmp_file);
+            }
+            catch {
+                ExitError("DownloadFile failed.");
+            }
+            return tmp_file;
+        }
+}
+
+
+        
+// using regex extract a known heading
+// we cannot rely on heading number
+//
+// approach
+// read line by line
+// when match regex of heading text (we add numbers for section headerer) e.g. if someone specifies
+// heading "Bill of Materials", we have to search for 1.0 Bill of Materials
+// read all lines of text paragraph until new section/heading (including "Appendix")
+//
+// todo handle error: no such file and missing regex
+public static string GetParagraphFromTextDocBasedonHeadingText(String filename, String HeadingText)
+{
+    if (!CheckValidString(filename) && !CheckValidString(HeadingText)) {
+        return null;
+    }
+    // match 1.0, or 11.0 etc then space then heading text e.g. 2.0 HeadingText
+    // also match
+    //     ^(([1-9][0-9]*\.[0-9]|[0-9][1-9]*)[\t ])?Heading Text matches tested here: http://regexstorm.net/tester
+    //     2 Quote Costs
+    // 3.0 Quote Costs
+    // 2   Quote Costs
+    // Quote Costs
+    // NOTE regex tester doesn't seem to like start of line
+
+    string reg_str=@"^(([1-9][0-9]*\.[0-9]|[0-9][1-9]*)[\t ])?"+HeadingText+"$";
+
+
+    // to figure out if the next line is a header for next section match
+    // Appendix 2 - Blah
+    // Appendix 2: Blah
+    // Appendix 3: Blah
+    // Appendix 3 Blah
+    // 3 Blah
+    // 3.0 Blah
+    // 2 Blah
+    String  reg_for_next_heading=@"^(Appendix[\t ]+|)([1-9][0-9]*\.[0-9]|[0-9][1-9]*)(([ \:\-])+)[A-Z][a-z]+$";
+    Regex rgx = new Regex(@reg_for_next_heading);
+    Match  match;
+    bool inHeader = false;
+    int counter = 0;
+    string line;
+    string paragraph = "";
+
+    // Read the file and display it line by line.
+    System.IO.StreamReader file = new System.IO.StreamReader(filename);
+    while((line = file.ReadLine()) != null)
+    {
+      counter++;
+        if (inHeader) {
+            // check e haven't reached end of paragraph in below header, if so finish
+           if (rgx.IsMatch(line)) { break; }
+            paragraph=paragraph + System.Environment.NewLine + line;
+            continue;
+        }
+
+      // not in header, lets see if this line is start of header we need
+      match = rgx.Match(line);
+
+      // if not go to hnext line otherwise we are now in the header
+      if (!match.Success) { continue; } 
+      else { inHeader=true; }
+    }
+   file.Close();
+   return(paragraph);
+}
+
 
     }//END      Program
 }//END         Add_Function
