@@ -1,0 +1,31 @@
+notes on formatting word docs
+
+
+outcome required
+extract text from word docs (and others in future)
+
+question
+can we extract table veratum using com model?
+
+issues
+save word doc as text, does not preserve table 'layout' e.g. we need tab between cells and each row on newline
+saving as html we can covert to text but same problem, unless special regex logic to preserve td/tr
+this regex \<(.|\n)*?\> replaces all
+
+idea to maintain table format
+convert file to html
+strip out all carriage returns
+convert </tr> to \n
+convert </h1> to \n
+convert <h1> to \n
+convert </td> to \t
+remove all tags replace('\<(.|\n)*?\>', "")
+
+
+
+
+notes
+this product (https://www.aspose.com/purchase/pricing-info-step-1-of-4.aspx) claims to have a 'preserve format' of tables in word doc but its $1000
+this free package http://htmlagilitypack.codeplex.com provides DOM access model for content in html - can we 'just refer to the content' : to be tested
+
+

@@ -119,7 +119,7 @@ public static string GetParagraphFromTextDocBasedonHeadingText(String filename, 
     reg_for_next_heading=="^(Appendix[\t ]+|)([1-9][0-9]*\.[0-9]|[0-9][1-9]*)(([ \:\-])+)[A-Z][a-z]+$"
     Regex r = new Regex(@reg_str, RegexOptions.Singleline);
     Match match;
-    bool inHeader;
+    bool inHeader = false;
     int counter = 0;
     string line;
     string paragraph = "";
