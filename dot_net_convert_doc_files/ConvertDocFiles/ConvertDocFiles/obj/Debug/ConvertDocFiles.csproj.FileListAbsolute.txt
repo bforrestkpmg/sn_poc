@@ -1,0 +1,2 @@
+P:\dot_net_convert_doc_files\ConvertDocFiles\ConvertDocFiles\bin\Debug\ConvertDocFiles.exe.config
+P:\dot_net_convert_doc_files\ConvertDocFiles\ConvertDocFiles\obj\Debug\ConvertDocFiles.csprojResolveAssemblyReference.cache
