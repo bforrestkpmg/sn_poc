@@ -21,6 +21,26 @@ convert <h1> to \n
 convert </td> to \t
 remove all tags replace('\<(.|\n)*?\>', "")
 
+# This works!
+
+cat TestDoc_DocWithHeading_andHeadingNumber_IncludesTable.htm | tr -d "\n" | sed -e $'s/\<h1\>/\\\n\<h1\>/g' | sed -e $'s/\<table/\\\n\<table/g' |  sed -e $'s/\<\/tr\>/\\\n/g' | sed -e $'s/\<\/h1\>/\\\n/g' | sed 's/\<\/td\>/        /g' | sed 's/<[^>]*>//g' | sed 's/\&nbsp\;//g'
+# NOTE: make sure use Ctrl+V to insert tab s/\<\/td\>/        /g
+
+produces
+
+///
+
+1. Heading 1
+Text in heading 1Test in heading 1 line 2
+     Table head 1              Table head 2              Table head 3              Table head 4           
+     Cell 1              Cell 2              Cell 3              Cell 4           
+     Cell 5              Cell 6              Cell 7              Cell 8           
+
+
+2. Heading 2
+Text in heading 2Test in heading 2 line 2
+///
+
 
 
 

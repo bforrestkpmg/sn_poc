@@ -10,33 +10,24 @@ var absolute_url=SOWSERVER+"/"+SOWDIR
 var get_data_script="get_data.exe"
 var power_shell_script_exec_str="";
 
+// when "get_data.exe" -test called automatically returns stubbed data based on filename and heading
+var test_flag=" -test";
+
 
 function run_mid(execstr)
 {
-  //TODO figure out how to do this	in service now
+  //TODO service now construct
 }
 
-// get data from SOWSERVER
-// assumes script is 
+// get data from Sharepoint means running .net program (name held in get_data_script)
+// assumes script is stored in get_data_script
 // get_data.exe <url/file> <heading>
 function gen_get_data_exec(file, heading)
 {
 	if ( (file == NULL) || (file.length <= 0) ) return null;
 	if ( (heading == NULL) || (heading.length <= 0) ) return null;
-   var s = get_data_script + " " + file + " " + heading;
+   var s = get_data_script + " " + file + " " + heading + test_flag;
    return s;	
-}
-
-
-// loop through all entries and remove parenthesis
-function clean_up_sow_item_ids(arr)
-{
-  var newarr=[];
-  for (i = 0; i < arr.length; i++) { 
-  	s=arr[i].replace(/[\(\)]/g, "");
-  	newarr.push(s)
-  }
-  return newarr;
 }
 
 function print_out_sow_component_array(item_description_arr)
@@ -55,11 +46,15 @@ function print_out_item_data(sow_asset_id, components_text)
 	return x;
 }
 
-
-// TODO make this service now 'function'
+// TODO make this service now to show user error
 function raise_error(e) {
 	throw "Error: " + e;
 }
+
+
+//
+// REGEX code to do automation/matching
+//
 
 // look for all occurances of 1.0\sow asset id\t
 // and return the 2nd array element = sow asset id
@@ -164,37 +159,58 @@ function lookup_sow_id_description(list_of_sows, detail_info) {
 } //lookup_sow_id_description
 
 
-// MAIN Start
 
-// this needs to be retrieved from
+
+// test data
+// override these variables to see outcome
+// e.g. 
+// $ jsc javascript_servicenow_automation.js 
+// --> <item><asset_id>WS-C4506-E</asset_id><components>WS-C4506-E,,  Firewall-Support line 1, Firewall-Support xline2</components><item>
+// --> <item><asset_id>WS-c4999-F</asset_id><components>WS-c4999-F,,  Firewall-Support YYYY</components><item>
+
+
+// MAIN Start
 var sow_bill_of_materials;
 var detail_bom_info;
 
-// test data
-// sow_bill_of_materials =  "hello there (XXXXXX), how are you doing (YYYYYY) blah blah";
-// example with 2 asset ids
+// // example with 2 asset ids
 sow_bill_of_materials =  "1.0	WS-C4506-E	Cat4500 E-Series 6-Slot Chassis fan no ps	2	$7,461.75 \n1.1 WS-X4748-RJ45-E	Catalyst 4500 E-Series 48-Port10/100/1000 Non-Bl;ocking	2	$10,449.44\n2.0	WS-c4999-F	Cat4500 E-Series 6-Slot Chassis fan no ps	2	$7,461.75\n2.1	WS-X4748-RJ45-E	Cataqlyst 4500 E-Series 48-Port 10/100/1000 Non-Blcoking	2	$7,461.75";
-detail_bom_info = "Pricing Table Notes: \n \n 1.	A Contract Variation will be executed between the parties to add the incremental charge to the existing ‘TWS Service 3 – Data Centre to Data Centre’ Resource Unit\n 2.	This solution will be delivered under the T&Cs of the existing DNV agreement between Qantas and Telstra. A contract variation will be required to add some new Resource Units (price points), otherwise the service model will be as per the existing agreement\n \n 22\n \n Once Off Charges\n \n \n Consultancy Services ~ GST Excl	Units	Unit Price	Extended Price\n \n \n Proramme Support / Imlementation Da - 8 hours\n 5	1135.68	$5,678.40\n \n Ongoing Resource Unit Charges\n Additional Resource Units -GST Excl	Quanity	RU Price(per month)	Unit Extended Price	Total Contract Value\n Firewall-Infrastructure-New-Complex (WS-C4506-E)	2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support line 1\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline2\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2\t$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY\t2\t$     324.44	$   648.88	$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)	$    470.97 $   1,883.88	$  90,426.24\n"
+// use this example with abgove sow_bill_of_materails and the components will be empoty
+// detail_bom_info = "lakdsjflkadjsf lkadjsfladsj flkj afdslkj adslkfj aldfskj fa";
+
+ detail_bom_info = "Pricing Table Notes: \n \n 1.	A Contract Variation will be executed between the parties to add the incremental charge to the existing ‘TWS Service 3 – Data Centre to Data Centre’ Resource Unit\n 2.	This solution will be delivered under the T&Cs of the existing DNV agreement between Qantas and Telstra. A contract variation will be required to add some new Resource Units (price points), otherwise the service model will be as per the existing agreement\n \n 22\n \n Once Off Charges\n \n \n Consultancy Services ~ GST Excl	Units	Unit Price	Extended Price\n \n \n Proramme Support / Imlementation Da - 8 hours\n 5	1135.68	$5,678.40\n \n Ongoing Resource Unit Charges\n Additional Resource Units -GST Excl	Quanity	RU Price(per month)	Unit Extended Price	Total Contract Value\n Firewall-Infrastructure-New-Complex (WS-C4506-E)	2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support line 1\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline2\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2\t$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY\t2\t$     324.44	$   648.88	$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)	$    470.97 $   1,883.88	$  90,426.24\n"
+
 // simple example for one asset id
- // sow_bill_of_materials =  "1.0	WS-C4506-E	Cat4500 ";
+ // sow_bill_of_materials =  "1.0	WS-c4999-F	Cat4500 ";
 // detail_bom_info = "Firewall-Infrastructure-New-Complex (WS-C4506-E)	2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support line 1\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline2\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2\t$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY\t2\t$     324.44	$   648.88	$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)	$    470.97 $   1,883.88	$  90,426.24\n"
-//detail_bom_info = "blah\nblah\n1.0 XXXXXX\thello there after XXXX\tcell2\tcell3\n something else\n something else\n2.0 xxxxxxx nothing here\nblah\nblah\n3.0 YYYYYY\tthis is text after YYYYYY\tcell2.x\n";
-//detail_bom_info = "Firewall-Infrastructure-New-Complex (YYYYYY) blah	2	$     1,837.33 $   3,674.66	$  176,383.68"
+// detail_bom_info = "blah\nblah\n1.0 XXXXXX\thello there after XXXX\tcell2\tcell3\n something else\n something else\n2.0 xxxxxxx nothing here\nblah\nblah\n3.0 YYYYYY\tthis is text after YYYYYY\tcell2.x\n";
+// detail_bom_info = "Firewall-Infrastructure-New-Complex (YYYYYY) blah	2	$     1,837.33 $   3,674.66	$  176,383.68"
 
 // with no matches
 //detail_bom_info = "blah\nblah\n1.0 X\thello there after XXXX\tcell2\tcell3\n something else\n something else\n2.0 xxxxxxx nothing here\nblah\nblah\n3.0 Y\tthis is text after YYYYYY\tcell2.x\n";
 
-// sow_bill_of_materials=run_mid(gen_get_data_exec(absolute_url+user_file_number, "Bill of Materials"))
-// detail_bom_info=run_mid(gen_get_data_exec(absolute_url+user_file_number, "Appendix 1:XXXX"))
+
+
+
 
 // STEP 1
+// var user_sow_filename = get_user_selection();
+
+// STEP 2
+// get text from file for user_sow_filename
+// sow_bill_of_materials=run_mid(gen_get_data_exec(user_sow_filename, "Bill of Materials"))
+// detail_bom_info=run_mid(gen_get_data_exec(user_sow_filename, "Quote"))
+
+// STEP 3
 var SOW_ITEM_IDS=find_sow_ids(sow_bill_of_materials);
 if (SOW_ITEM_IDS === null) { raise_error("No SOW Item IDs found"); }
 
-// STEP 2
+// STEP 4
 var SOW_ITEM_IDS_AND_DESCRIPTION=lookup_sow_id_description(SOW_ITEM_IDS, detail_bom_info);
 if (SOW_ITEM_IDS_AND_DESCRIPTION.length <= 0 ) { raise_error("No SOW Item Descriptions Found"); }
 
+// STEP 5
+// display result to user
 print_out_sow_component_array(SOW_ITEM_IDS_AND_DESCRIPTION);
 
 
