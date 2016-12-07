@@ -62,35 +62,68 @@ namespace ConvertDocFiles
                 doc.Load(tmpfile);
                 System.Console.WriteLine("converted: " + tmpfile);
 
-                string body = doc.DocumentNode.SelectSingleNode("//body").InnerHtml;
-                System.Console.WriteLine("body: " + body.ToString());
-
-                // works to just get H1 element
-                //var h1Elements = doc.DocumentNode.Descendants("h1").Select(nd => nd.InnerText);
-                //string h1Text = string.Join(" ", h1Elements);
-                //System.Console.WriteLine("op: " + h1Text);
+                //HtmlNode body = doc.DocumentNode.SelectSingleNode("//body");
 
 
-
-
-                //XmlDocument htmlDocument = new XmlDocument();
-                //htmlDocument.Load(@tmpfile);
-
-                //System.IO.StreamReader file = new System.IO.StreamReader(tmpfile);
-                //String filestring = "";
-                //String line;
-                //while ((line = file.ReadLine()) != null)
-                //{
-                //    filestring = filestring + System.Environment.NewLine;
+                //HtmlDocument bodyhtml = new HtmlDocument();
+                //bodyhtml.LoadHtml(body);
+                //HtmlNodeCollection content = body.SelectNodes("//*");
+                //foreach (HtmlNode node in content)  {
+                //    System.Console.WriteLine("nide: " + node.InnerText);
                 //}
-                //file.Close();
-                //htmlDocument.LoadXml(filestring);
-                //Console.WriteLine(htmlDocument.InnerXml);
 
-                // Select the body tag
-                // String bodyNode = htmlDocument.GetElementsByTagName("body").Item(0);
+                //String text = "";
+                //HtmlNode d = doc.DocumentNode;
+                //IEnumerable<HtmlAgilityPack.HtmlNode> de = d.DescendantNodes();
+                //foreach (var node in de)
+                //{
+                //    String newtext = node.InnerText;
+                //    text += newtext + Environment.NewLine;
+                //}
+                Boolean inCorrectHeading = false;
+                Boolean inCorrecttable = false;
+                String headingtext = "Quote Costs";
+                String extractText = "";
+                String ActualHeadingText = "";
+                var findclasses = doc.DocumentNode.SelectNodes("//div//*");
+                //bodyhtml.LoadHtml(body);
+                //HtmlNodeCollection content = body.SelectNodes("//*");
+                //foreach (HtmlNode node in content)  {
+                //    System.Console.WriteLine("nide: " + node.InnerText);
+                //}
+                 var outputclasses = new HtmlNodeCollection(null);
+                foreach (HtmlNode node in findclasses) {
+                    System.Console.WriteLine(node.Name);
+                    if (node.Name.StartsWith("h")) 
+                    {
+                        if (node.InnerText.Contains(headingtext))
+                        {
+                            System.Console.WriteLine("in right heading: "+ node.InnerText);
+                            inCorrectHeading = true;
+                            continue;
+                        }
+                        else
+                        {
+                            System.Console.WriteLine("in a different heading");
+                            inCorrectHeading = false;
+                            inCorrecttable = false;
+                            continue;
+                        }
+                        
+                    }
+                    if (inCorrectHeading)
+                    {
+                        outputclasses.Add(node);
+                        //extractText = extractText + node.InnerText.ToString() + Environment.NewLine;
+                    }
 
-                Console.WriteLine("Press ESC to stop");
+
+                } //foreach
+                // iterate over our new collection
+                //foreach (HtmlNode node in findclasses)
+                //{
+                //}
+               Console.WriteLine("Press ESC to stop");
                 do
                 {
                     while (!Console.KeyAvailable)
