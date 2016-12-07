@@ -61,15 +61,20 @@ namespace ConvertDocFiles
                 HtmlDocument doc = new HtmlDocument();
                 doc.Load(tmpfile);
                 System.Console.WriteLine("converted: " + tmpfile);
-                var h1Elements = doc.DocumentNode.Descendants("h1").Select(nd => nd.InnerText);
-                string h1Text = string.Join(" ", h1Elements);
-                System.Console.WriteLine("op: " + h1Text);
-                
-            
+
+                string body = doc.DocumentNode.SelectSingleNode("//body").InnerHtml;
+                System.Console.WriteLine("body: " + body.ToString());
+
+                // works to just get H1 element
+                //var h1Elements = doc.DocumentNode.Descendants("h1").Select(nd => nd.InnerText);
+                //string h1Text = string.Join(" ", h1Elements);
+                //System.Console.WriteLine("op: " + h1Text);
 
 
-            //XmlDocument htmlDocument = new XmlDocument();
-            //htmlDocument.Load(@tmpfile);
+
+
+                //XmlDocument htmlDocument = new XmlDocument();
+                //htmlDocument.Load(@tmpfile);
 
                 //System.IO.StreamReader file = new System.IO.StreamReader(tmpfile);
                 //String filestring = "";
@@ -83,7 +88,7 @@ namespace ConvertDocFiles
                 //Console.WriteLine(htmlDocument.InnerXml);
 
                 // Select the body tag
-               // String bodyNode = htmlDocument.GetElementsByTagName("body").Item(0);
+                // String bodyNode = htmlDocument.GetElementsByTagName("body").Item(0);
 
                 Console.WriteLine("Press ESC to stop");
                 do
