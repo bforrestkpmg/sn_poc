@@ -49,3 +49,10 @@ this product (https://www.aspose.com/purchase/pricing-info-step-1-of-4.aspx) cla
 this free package http://htmlagilitypack.codeplex.com provides DOM access model for content in html - can we 'just refer to the content' : to be tested
 
 
+
+
+# invstigation of html / xml
+
+direct save as xml - not indented sections
+save as html, then to xml - indented
+	

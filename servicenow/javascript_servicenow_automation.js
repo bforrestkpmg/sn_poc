@@ -189,29 +189,53 @@ sow_bill_of_materials =  "1.0	WX-C9999-X	Cat4500 E-Series 6-Slot Chassis fan no 
 // with no matches
 //detail_bom_info = "blah\nblah\n1.0 X\thello there after XXXX\tcell2\tcell3\n something else\n something else\n2.0 xxxxxxx nothing here\nblah\nblah\n3.0 Y\tthis is text after YYYYYY\tcell2.x\n";
 
+function matchWords(subject, words) {
+    var regexMetachars = /[(){[*+?.\\^$|]/g;
+    for (var i = 0; i < words.length; i++) {
+        words[i] = words[i].replace(regexMetachars, "\\$&");
+    }
+    var regex = new RegExp("\\b(?:" + words.join("|") + ")\\b", "gi");
+    return subject.match(regex) || [];
+}
+
+// var subject = "One times two plus one equals three.";
+// var res;
+// res=matchWords(subject, ["one","two","three"]);
+// Returns an array with four matches: ["One","two","one","three"]
+
+// var subject =  "Managed WAN – Router Infrastructure –Router – Complex – New";
+// var res;
+// var search_term_str = "Router – Infrastructure – New – Complex";
+// var search_terms =[];
+
+// res=matchWords(subject, ["one","two","three"]);
+// debug(res);
+
+var levenshtein = require('fast-levenshtein');
+var distance = levenshtein.get('back', 'book');   // 2
+debug(distance);
 
 
 
+// // STEP 1
+// // var user_sow_filename = get_user_selection();
 
-// STEP 1
-// var user_sow_filename = get_user_selection();
+// // STEP 2
+// // get text from file for user_sow_filename
+// // sow_bill_of_materials=run_mid(gen_get_data_exec(user_sow_filename, "Bill of Materials"))
+// // detail_bom_info=run_mid(gen_get_data_exec(user_sow_filename, "Quote"))
 
-// STEP 2
-// get text from file for user_sow_filename
-// sow_bill_of_materials=run_mid(gen_get_data_exec(user_sow_filename, "Bill of Materials"))
-// detail_bom_info=run_mid(gen_get_data_exec(user_sow_filename, "Quote"))
+// // STEP 3
+// var SOW_ITEM_IDS=find_sow_ids(sow_bill_of_materials);
+// if (SOW_ITEM_IDS === null) { raise_error("No SOW Item IDs found"); }
 
-// STEP 3
-var SOW_ITEM_IDS=find_sow_ids(sow_bill_of_materials);
-if (SOW_ITEM_IDS === null) { raise_error("No SOW Item IDs found"); }
+// // STEP 4
+// var SOW_ITEM_IDS_AND_DESCRIPTION=lookup_sow_id_description(SOW_ITEM_IDS, detail_bom_info);
+// if (SOW_ITEM_IDS_AND_DESCRIPTION.length <= 0 ) { raise_error("No SOW Item Descriptions Found"); }
 
-// STEP 4
-var SOW_ITEM_IDS_AND_DESCRIPTION=lookup_sow_id_description(SOW_ITEM_IDS, detail_bom_info);
-if (SOW_ITEM_IDS_AND_DESCRIPTION.length <= 0 ) { raise_error("No SOW Item Descriptions Found"); }
-
-// STEP 5
-// display result to user
-print_out_sow_component_array(SOW_ITEM_IDS_AND_DESCRIPTION);
+// // STEP 5
+// // display result to user
+// print_out_sow_component_array(SOW_ITEM_IDS_AND_DESCRIPTION);
 
 
 
