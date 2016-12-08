@@ -92,24 +92,38 @@ namespace ConvertDocFiles
                 String headingtext = "Quote Costs";
                 String extractText = "";
                 String ActualHeadingText = "";
-                String line_to_use;
+                String line_to_use="";
                 HtmlNode[] nodearray;
-                var findclasses = doc.DocumentNode.SelectNodes("//body//*");
+                var findclasses = doc.DocumentNode.SelectNodes("//*");
                 var outputclasses = new HtmlNodeCollection(null);
                 int counter = 0;
+                String newstr;
+                String bufferchar = "";
+                String beforechar = "";
+                String afterchar = "";
+                Boolean First = true;
+
                 foreach (HtmlNode node in findclasses) {
                     counter++;
-                    System.Console.WriteLine("Looking at node: " + node.Name + ", text: " + node.InnerText);
-                    line_to_use = Regex.Replace(node.InnerText, Environment.NewLine, "");
+                    newstr = "";
+                    line_to_use = "";
+                    afterchar = "";
+                    beforechar = "";
+                    // relies on the fact that word docs are flat within body & div
+                    //System.Console.WriteLine("Looking at node: " + node.Name + ", text: " + node.InnerText);
+
+                    if ((node.ParentNode.Name != "body") && (node.ParentNode.Name != "div")  && (node.ParentNode.Name != "table") && (node.ParentNode.Name != "tr")) { continue; }
+                    System.Console.WriteLine("Looking at node: " + node.Name + ", parent: " + node.ParentNode.Name);
                     if (node.Name.StartsWith("h")) 
                     {
+                       // System.Console.WriteLine("checking header");
                         if (node.InnerText.Contains(headingtext))  {
                             //System.Console.WriteLine("in right heading: "+ node.InnerText);
                             inCorrectHeading = true;
                             continue;
                         }
                         else { 
-                            //System.Console.WriteLine("in a different heading");
+                           // System.Console.WriteLine("in a different heading");
                             inCorrectHeading = false;
                             continue;
                         }   
@@ -117,56 +131,69 @@ namespace ConvertDocFiles
                     if (inCorrectHeading)
                     {
                         outputclasses.Add(node);
-                        String bufferchar = "";
-                        String beforechar = "";
-                        String afterchar = "";
+
                         switch (node.Name)
                         {
+
                             case "p":
                                 {
-                                    // only works for a single p within a table structure
-                                    if (!inTable)
-                                    {
-                                        afterchar = "\",";
-                                        beforechar = "\",";
-                                        //afterchar = Environment.NewLine;
-                                        //bufferchar = "_n_";
-                                    }
-                                    else { afterchar = Environment.NewLine;
-                                        inTable = false;  }
+                                    inTable = false;
+                                    System.Console.WriteLine("In para");
+                                    beforechar = Environment.NewLine;
+                                    afterchar = Environment.NewLine;
+                                    line_to_use = node.InnerText;
                                     break;
                                 }
                             case "table":
                                 {
+                                    System.Console.WriteLine("table");
                                     afterchar = Environment.NewLine;
                                     //bufferchar = "_n_";
-                                   
+                                    inTable = true;
                                     break;
                                 }
                             case "tr":
                                 {
+                                    System.Console.WriteLine("row");
+                                    beforechar = Environment.NewLine;
                                     afterchar = Environment.NewLine;
-                                    inTable = true;
+                                    First = true;
                                     //bufferchar = "_n_";
+                                    // line_to_use = node.InnerText;
                                     break;
                                 }
                             case "td":
                                 {
-                                    inTable = true;
-                                    //bufferchar = "  "; // tab
-                                    afterchar = "\",";
-                                    beforechar = "\"";
+                                    
+                                    if (First)
+                                    {
+                                        beforechar = Environment.NewLine + "\"";
+                                        First = false;
+                                    }
+                                    else
+                                    {
+                                      
+                                        beforechar = "\"";
+                                    }
+                                    System.Console.WriteLine("cell");
+
+                                    // afterchar = "\",";
+                                    afterchar = "\"   ";
+
+                                    line_to_use = node.InnerText;
                                     //bufferchar = "_t_";
                                     break;
                                 }
                         } //switch
-                          //   System.Console.WriteLine(counter.ToString() + " : " + "adding node: " + node.InnerText.ToString());
-                        String newstr;
                         newstr = Regex.Replace(line_to_use, "&nbsp;", " ");
                         newstr = Regex.Replace(newstr, "[^\u0000-\u007F]", "");
-
-                        extractText = extractText + beforechar + newstr + afterchar;
+                        System.Console.WriteLine("adding newstr: " + newstr);
+                        if (newstr != "")
+                        {
+                            extractText = extractText + beforechar + newstr + afterchar;
+                        }
                     }
+
                     
 
 
