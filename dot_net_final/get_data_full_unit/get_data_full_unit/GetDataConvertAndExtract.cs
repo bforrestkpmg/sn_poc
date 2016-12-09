@@ -76,7 +76,7 @@ namespace GetDataConvertAndExtract
             return(true);
         }
 
-        public static void ExtractSection(String filename, ref String return_buffer, String headingtext)
+        public void ExtractSection(String filename, ref String return_buffer, String headingtext)
         {
             HtmlDocument doc = new HtmlDocument();
             doc.Load(filename, Encoding.GetEncoding("iso-8859-1"));
@@ -110,7 +110,7 @@ namespace GetDataConvertAndExtract
                     compare_str = node.InnerText.Replace("\r", "").Replace("\n", " ");
                     if (compare_str.Contains(headingtext))
                     {
-                        System.Console.WriteLine("in right heading: " + compare_str);
+                       // System.Console.WriteLine("in right heading: " + compare_str);
                         inCorrectHeading = true;
                         continue;
                     }
