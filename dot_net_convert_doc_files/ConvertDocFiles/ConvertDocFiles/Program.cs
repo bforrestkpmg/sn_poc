@@ -65,7 +65,9 @@ namespace ConvertDocFiles
         {
             static void Main(string[] args)
             {
-                String OverrideFile = "";//  @"S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable.htm";
+                String OverrideFile = ""; // @"S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable_lesscontent.htm";
+                String headingtext = "Quote Costs";
+                //String headingtext = "Heading 1";
                 String filetouse = "";
                 Console.BufferHeight = 999;
                 Console.BufferWidth = 200;
@@ -90,7 +92,7 @@ namespace ConvertDocFiles
                
                 Boolean inCorrectHeading = false;
                 Boolean inTable = false;
-                String headingtext = "Quote Costs";
+             
                 String extractText = "";
                 String ActualHeadingText = "";
                 String line_to_use="";
@@ -111,10 +113,10 @@ namespace ConvertDocFiles
                     afterchar = "";
                     beforechar = "";
                     // relies on the fact that word docs are flat within body & div
-                    System.Console.WriteLine("Looking at node: " + node.Name + ", text: " + node.InnerText);
+                    //System.Console.WriteLine("Looking at node: " + node.Name + ", text: " + node.InnerText);
 
                     if ((node.ParentNode.Name != "body") && (node.ParentNode.Name != "div")  && (node.ParentNode.Name != "table") && (node.ParentNode.Name != "tr")) { continue; }
-                    System.Console.WriteLine("Looking at node: " + node.Name + ", parent: " + node.ParentNode.Name);
+                //   System.Console.WriteLine("Looking at node: " + node.Name + ", parent: " + node.ParentNode.Name);
                     if (node.Name.StartsWith("h")) 
                     {
                        // System.Console.WriteLine("checking header");
@@ -137,19 +139,16 @@ namespace ConvertDocFiles
                             case "p":
                                 {
                                     inTable = false;
-                                   
                                         beforechar = Environment.NewLine;
                                         afterchar = Environment.NewLine;
                                         line_to_use = node.InnerText;
-                                   
                                     break;
                                 }
 
                             case "tr":
                                 {
                                     inTable = true;
-                                    System.Console.WriteLine("row");
-                                    beforechar = Environment.NewLine;
+                                    //System.Console.WriteLine("row");
                                     afterchar = Environment.NewLine;
                                     First = true;
                                     //bufferchar = "_n_";
@@ -168,22 +167,27 @@ namespace ConvertDocFiles
                                     {
                                         beforechar = "\"";
                                     }
-                                    System.Console.WriteLine("cell");
+                                   // System.Console.WriteLine("cell");
 
                                     // afterchar = "\",";
-                                    afterchar = "\"   ";
+                                    afterchar = "\"\t";
 
                                     line_to_use = node.InnerText;
                                     //bufferchar = "_t_";
                                     break;
                                 }
                         } //switch
+                      //  System.Console.WriteLine("Processing node: " + node.Name + ", text: " + node.InnerText);
                         newstr = Regex.Replace(line_to_use, "&nbsp;", " ");
+                        newstr = Regex.Replace(newstr, "\r", "");
+                        newstr = Regex.Replace(newstr, "\n", "");
                         newstr = Regex.Replace(newstr, "[^\u0000-\u007F]", "");
+                        newstr = newstr.Trim();
                         System.Console.WriteLine("adding newstr: " + newstr);
                         if (newstr != "")
                         {
-                            extractText = extractText + beforechar + newstr + afterchar;
+                            System.Console.WriteLine("Adding line: " + "beforechar: _" + beforechar + "_, newstr: _" + newstr + "_, afterchar: _" + afterchar + "_");
+                           extractText = extractText + beforechar + newstr + afterchar;
                         }
                     }
 
