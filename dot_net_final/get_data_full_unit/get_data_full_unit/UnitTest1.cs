@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using GetDataConvertAndExtract;
 
@@ -34,6 +35,15 @@ namespace get_data_full_unit
             String res = g.GetExt("hello");
             Assert.IsNotNull(res, "Get Ext not returning filename");
             Assert.AreEqual(res, "", "filename incorrect extension");
+        }
+
+        [TestMethod]
+        public void TestWritesFile()
+        {
+            GetDataConvertAndExtract.ConvertGetData g = new GetDataConvertAndExtract.ConvertGetData();
+            String tmpfile = g.GetTempFile(".blah.test");
+            g.WriteFile(tmpfile, "hello there");
+            Assert.IsTrue(File.Exists(tmpfile), "file not written");
         }
     }
 }

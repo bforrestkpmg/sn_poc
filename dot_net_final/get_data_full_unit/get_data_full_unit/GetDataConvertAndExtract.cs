@@ -20,12 +20,12 @@ namespace GetDataConvertAndExtract
             return fileName;
         }
         //returns extension
-        public  string GetExt(String filename)
+        public string GetExt(String filename)
         {
             return Path.GetExtension(filename);
         }
 
-        public static void ConvertDocToHtml(object Sourcepath, object TargetPath)
+        public void ConvertDocToHtml(object Sourcepath, object TargetPath)
         {
 
             Word._Application newApp = new Word.Application();
@@ -51,7 +51,7 @@ namespace GetDataConvertAndExtract
         }
 
 
-        public static void WriteFile(String fn, String buffer)
+        public void WriteFile(String fn, String buffer)
         {
             string[] lines = buffer.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
 
