@@ -25,29 +25,34 @@ namespace GetDataConvertAndExtract
             return Path.GetExtension(filename);
         }
 
-        public void ConvertDocToHtml(object Sourcepath, object TargetPath)
+        public Boolean ConvertDocToHtml(object Sourcepath, object TargetPath)
         {
+            try
+            {
+                Word._Application newApp = new Word.Application();
+                Word.Documents d = newApp.Documents;
+                object Unknown = Type.Missing;
+                Word.Document od = d.Open(ref Sourcepath, ref Unknown,
+                                         ref Unknown, ref Unknown, ref Unknown,
+                                         ref Unknown, ref Unknown, ref Unknown,
+                                         ref Unknown, ref Unknown, ref Unknown,
+                                         ref Unknown, ref Unknown, ref Unknown, ref Unknown);
+                object format = Word.WdSaveFormat.wdFormatFilteredHTML;
 
-            Word._Application newApp = new Word.Application();
-            Word.Documents d = newApp.Documents;
-            object Unknown = Type.Missing;
-            Word.Document od = d.Open(ref Sourcepath, ref Unknown,
-                                     ref Unknown, ref Unknown, ref Unknown,
-                                     ref Unknown, ref Unknown, ref Unknown,
-                                     ref Unknown, ref Unknown, ref Unknown,
-                                     ref Unknown, ref Unknown, ref Unknown, ref Unknown);
-            object format = Word.WdSaveFormat.wdFormatHTML;
+                newApp.ActiveDocument.SaveAs(ref TargetPath, ref format,
+                            ref Unknown, ref Unknown, ref Unknown,
+                            ref Unknown, ref Unknown, ref Unknown,
+                            ref Unknown, ref Unknown, ref Unknown,
+                            ref Unknown, ref Unknown, ref Unknown,
+                            ref Unknown, ref Unknown);
 
-            newApp.ActiveDocument.SaveAs(ref TargetPath, ref format,
-                        ref Unknown, ref Unknown, ref Unknown,
-                        ref Unknown, ref Unknown, ref Unknown,
-                        ref Unknown, ref Unknown, ref Unknown,
-                        ref Unknown, ref Unknown, ref Unknown,
-                        ref Unknown, ref Unknown);
-
-            newApp.Documents.Close(Word.WdSaveOptions.wdDoNotSaveChanges);
-
-
+                newApp.Documents.Close(Word.WdSaveOptions.wdDoNotSaveChanges);
+            }
+            catch
+            {
+                return(false);
+            }
+            return(true);
         }
 
 
