@@ -111,5 +111,17 @@ namespace get_data_full_unit
             Assert.IsTrue(File.Exists(tmpfile), "file not written");
             FileAssert.AreEqual(tmpfile, to_comparehtml);
         }
+
+        [TestMethod]
+        public void ConvertDocToHtml_HandleError_CannotSaveAsType()
+        {
+            Assert.Inconclusive();
+        }
+
+        [TestMethod]
+        public void ConvertDocToHtml_HandleError_DestinationFileCannotBeWritten()
+        {
+            Assert.Inconclusive();
+        }
     }
  }
