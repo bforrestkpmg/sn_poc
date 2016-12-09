@@ -19,12 +19,21 @@ namespace get_data_full_unit
         }
 
         [TestMethod]
-        public void TestGetExt()
+        public void TestGetExtOK()
         {
             GetDataConvertAndExtract.ConvertGetData g = new GetDataConvertAndExtract.ConvertGetData();
             String res = g.GetExt("hello.there");
             Assert.IsNotNull(res, "Get Ext not returning filename");
             Assert.IsTrue(res.EndsWith(".there"), "filename incorrect extension");
+        }
+
+        [TestMethod]
+        public void TestGetExthandlesblank()
+        {
+            GetDataConvertAndExtract.ConvertGetData g = new GetDataConvertAndExtract.ConvertGetData();
+            String res = g.GetExt("hello");
+            Assert.IsNotNull(res, "Get Ext not returning filename");
+            Assert.AreEqual(res, "", "filename incorrect extension");
         }
     }
 }
