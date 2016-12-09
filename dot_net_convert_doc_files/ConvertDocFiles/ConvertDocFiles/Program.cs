@@ -80,7 +80,7 @@ namespace ConvertDocFiles
             String beforechar = "";
             String afterchar = "";
             Boolean First = true;
-
+            String compare_str = "";
             foreach (HtmlNode node in findclasses)
             {
                 counter++;
@@ -92,13 +92,14 @@ namespace ConvertDocFiles
                 //System.Console.WriteLine("Looking at node: " + node.Name + ", text: " + node.InnerText);
 
                 if ((node.ParentNode.Name != "body") && (node.ParentNode.Name != "div") && (node.ParentNode.Name != "table") && (node.ParentNode.Name != "tr")) { continue; }
-                //   System.Console.WriteLine("Looking at node: " + node.Name + ", parent: " + node.ParentNode.Name);
+                //System.Console.WriteLine("Looking at node: " + node.Name + ", parent: " + node.ParentNode.Name);
                 if (node.Name.StartsWith("h"))
                 {
-                    // System.Console.WriteLine("checking header");
-                    if (node.InnerText.Contains(headingtext))
+                    compare_str = node.InnerText.Replace("\r", "").Replace("\n", " ");
+                    //System.Console.WriteLine("checking header, text: " + compare_str);
+                    if (compare_str.Contains(headingtext))
                     {
-                        //System.Console.WriteLine("in right heading: "+ node.InnerText);
+                        System.Console.WriteLine("in right heading: "+ compare_str);
                         inCorrectHeading = true;
                         continue;
                     }
@@ -179,38 +180,39 @@ namespace ConvertDocFiles
         {
             static void Main(string[] args)
             {
+                //String OverrideFile = @"S:\test\fixtures\files\QuoteAsTable.doc";
                 String OverrideFile = @"S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable_lesscontent.htm";
                 //String headingtext = "Quote Costs";
                 String headingtext = "Heading 1";
+                String filename_to_use = "";
                 String filetouse = "";
                 String extractText = "";
                 Console.BufferHeight = 999;
                 Console.BufferWidth = 200;
                 Console.Clear();
+                String processing_file = "";
 
-                if (OverrideFile != "") { filetouse = OverrideFile; }
-                else { filetouse = args[0]; }
+                if (OverrideFile != "") { filename_to_use = OverrideFile; }
+                else { filename_to_use = args[0]; }
 
-                System.Console.WriteLine("file: " + filetouse);
-                String extension = GetExt(filetouse);
+                System.Console.WriteLine("file: " + filename_to_use);
+                String extension = GetExt(filename_to_use);
                 System.Console.WriteLine("extension: " + extension);
                 if (!extension.StartsWith(".htm"))
                 {
                     String tmpfile = GetTempFile(".htm");
-                    ConvertDocToHtml(filetouse, tmpfile);
+                    ConvertDocToHtml(filename_to_use, tmpfile);
                     System.Console.WriteLine("converted: " + tmpfile);
-                    filetouse = tmpfile;
+                    processing_file = tmpfile;
+                    System.Console.WriteLine("using file: " + processing_file);
                 }
-                System.Console.WriteLine("using file: " + filetouse);
-                ExtractSection(filetouse, ref extractText, headingtext);
-                //System.Console.WriteLine("output: " + extractText);
+                else processing_file = filename_to_use;
+                System.Console.WriteLine("using file: " + processing_file);
+                ExtractSection(processing_file, ref extractText, headingtext);
+                System.Console.WriteLine("output: " + extractText);
                 System.Console.WriteLine("finish");
 
-                WriteFile(filetouse + ".op.csv", extractText);
-                //// iterate over our new collection
-                ////foreach (HtmlNode node in findclasses)
-                ////{
-                ////}
+                WriteFile(filename_to_use + ".op.csv", extractText);
                 Console.WriteLine("Press ESC to stop");
                 do
                 {
