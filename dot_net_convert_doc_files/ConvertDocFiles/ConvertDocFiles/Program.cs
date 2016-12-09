@@ -89,14 +89,11 @@ namespace ConvertDocFiles
                 afterchar = "";
                 beforechar = "";
                 // relies on the fact that word docs are flat within body & div
-                //System.Console.WriteLine("Looking at node: " + node.Name + ", text: " + node.InnerText);
-
                 if ((node.ParentNode.Name != "body") && (node.ParentNode.Name != "div") && (node.ParentNode.Name != "table") && (node.ParentNode.Name != "tr")) { continue; }
                 //System.Console.WriteLine("Looking at node: " + node.Name + ", parent: " + node.ParentNode.Name);
                 if (node.Name.StartsWith("h"))
                 {
                     compare_str = node.InnerText.Replace("\r", "").Replace("\n", " ");
-                    //System.Console.WriteLine("checking header, text: " + compare_str);
                     if (compare_str.Contains(headingtext))
                     {
                         System.Console.WriteLine("in right heading: "+ compare_str);
@@ -104,7 +101,6 @@ namespace ConvertDocFiles
                         continue;
                     }
                     else {
-                        // System.Console.WriteLine("in a different heading");
                         inCorrectHeading = false;
                         continue;
                     }
@@ -126,32 +122,20 @@ namespace ConvertDocFiles
                         case "tr":
                             {
                                 inTable = true;
-                                //System.Console.WriteLine("row");
                                 afterchar = Environment.NewLine;
                                 First = true;
-                                //bufferchar = "_n_";
-                                // line_to_use = node.InnerText;
                                 break;
                             }
                         case "td":
                             {
                                 inTable = true;
-                                if (First)
-                                {
+                                if (First) {
                                     beforechar = Environment.NewLine + "\"";
                                     First = false;
                                 }
-                                else
-                                {
-                                    beforechar = "\"";
-                                }
-                                // System.Console.WriteLine("cell");
-
-                                // afterchar = "\",";
+                                else { beforechar = "\""; }
                                 afterchar = "\"\t";
-
                                 line_to_use = node.InnerText;
-                                //bufferchar = "_t_";
                                 break;
                             }
                     } //switch
@@ -161,20 +145,12 @@ namespace ConvertDocFiles
                     newstr = Regex.Replace(newstr, "\n", "");
                     newstr = Regex.Replace(newstr, "[^\u0000-\u007F]", "");
                     newstr = newstr.Trim();
-                    // System.Console.WriteLine("adding newstr: " + newstr);
-                    if (newstr != "")
-                    {
+                    if (newstr != "") {
                         // System.Console.WriteLine("Adding line: " + "beforechar: _" + beforechar + "_, newstr: _" + newstr + "_, afterchar: _" + afterchar + "_");
                         return_buffer = return_buffer + beforechar + newstr + afterchar;
                     }
                 }
-
-
-
-
-            } //foreach
-
-
+           } //foreach
         } // ExtractSection
         class MainClass
         {
