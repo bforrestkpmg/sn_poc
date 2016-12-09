@@ -11,8 +11,10 @@ using HtmlAgilityPack;
 
 namespace ConvertDocFiles
 {
+ 
     class Program
     {
+       
 
         public static string GetTempFile(string ext)
         {
@@ -65,23 +67,29 @@ namespace ConvertDocFiles
         {
             static void Main(string[] args)
             {
+                String OverrideFileName = ""; //s @"S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable.htm";
+
+            String InputFile = "";
                 String filetouse = "";
                 Console.BufferHeight = 999;
                 Console.BufferWidth = 200;
                 Console.Clear();
 
-                System.Console.WriteLine("file: " + args[0]);
-                String extension = GetExt(args[0]);
+                if (OverrideFileName == "") { InputFile = args[0]; }
+                else InputFile = OverrideFileName;
+
+                System.Console.WriteLine("file: " + InputFile);
+                String extension = GetExt(InputFile);
                 System.Console.WriteLine("extension: " + extension);
                 if (!GetExt(args[0]).StartsWith(".htm"))
                 {
                     String tmpfile = GetTempFile(".htm");
-                    ConvertDocToHtml(args[0], tmpfile);
+                    ConvertDocToHtml(InputFile, tmpfile);
                     System.Console.WriteLine("converted: " + tmpfile);
                     filetouse = tmpfile;
                 }
 
-                else { filetouse = args[0];  }
+                else { filetouse = InputFile;  }
 
                 System.Console.WriteLine("using file: " + filetouse);
                 HtmlDocument doc = new HtmlDocument();
@@ -89,10 +97,11 @@ namespace ConvertDocFiles
                
                 Boolean inCorrectHeading = false;
                 Boolean inTable = false;
-                String headingtext = "Quote Costs";
+                String headingtext = "Heading 1";
                 String extractText = "";
                 String ActualHeadingText = "";
                 String line_to_use;
+                String newstr;
                 HtmlNode[] nodearray;
                 var findclasses = doc.DocumentNode.SelectNodes("//body//*");
                 var outputclasses = new HtmlNodeCollection(null);
@@ -103,7 +112,7 @@ namespace ConvertDocFiles
                     line_to_use = Regex.Replace(node.InnerText, Environment.NewLine, "");
                     if (node.Name.StartsWith("h")) 
                     {
-                        if (node.InnerText.Contains(headingtext))  {
+                        if (line_to_use.Contains(headingtext))  {
                             //System.Console.WriteLine("in right heading: "+ node.InnerText);
                             inCorrectHeading = true;
                             continue;
@@ -114,23 +123,26 @@ namespace ConvertDocFiles
                             continue;
                         }   
                     }
+                    System.Console.WriteLine("Processing");
                     if (inCorrectHeading)
                     {
                         outputclasses.Add(node);
                         String bufferchar = "";
                         String beforechar = "";
                         String afterchar = "";
+                        newstr = "";
+                        
                         switch (node.Name)
                         {
                             case "p":
                                 {
-                                    // only works for a single p within a table structure
-                                    if (!inTable)
+                                    if (inTable)
                                     {
-                                        afterchar = "\",";
-                                        beforechar = "\",";
-                                        //afterchar = Environment.NewLine;
-                                        //bufferchar = "_n_";
+                                        continue; // we will process the paragraph via contents of /td
+                                        //afterchar = "\",";
+                                        //beforechar = "\",";
+                                        ////afterchar = Environment.NewLine;
+                                        ////bufferchar = "_n_";
                                     }
                                     else { afterchar = Environment.NewLine;
                                         inTable = false;  }
@@ -140,8 +152,8 @@ namespace ConvertDocFiles
                                 {
                                     afterchar = Environment.NewLine;
                                     //bufferchar = "_n_";
-                                   
-                                    break;
+
+                                    break; ;
                                 }
                             case "tr":
                                 {
@@ -160,8 +172,8 @@ namespace ConvertDocFiles
                                     break;
                                 }
                         } //switch
-                          //   System.Console.WriteLine(counter.ToString() + " : " + "adding node: " + node.InnerText.ToString());
-                        String newstr;
+                       s System.Console.WriteLine(counter.ToString() + " : " + "adding node: " + line_to_use.ToString());
+                        
                         newstr = Regex.Replace(line_to_use, "&nbsp;", " ");
                         newstr = Regex.Replace(newstr, "[^\u0000-\u007F]", "");
 
