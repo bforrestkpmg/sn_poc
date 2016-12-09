@@ -65,23 +65,27 @@ namespace ConvertDocFiles
         {
             static void Main(string[] args)
             {
+                String OverrideFile =  @"S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable.htm";
                 String filetouse = "";
                 Console.BufferHeight = 999;
                 Console.BufferWidth = 200;
                 Console.Clear();
 
-                System.Console.WriteLine("file: " + args[0]);
-                String extension = GetExt(args[0]);
+                if (OverrideFile != "") { filetouse = OverrideFile; }
+                else { filetouse = args[0]; }
+
+                System.Console.WriteLine("file: " + filetouse);
+                String extension = GetExt(filetouse);
                 System.Console.WriteLine("extension: " + extension);
-                if (!GetExt(args[0]).StartsWith(".htm"))
+                if (extension.StartsWith(".htm"))
                 {
                     String tmpfile = GetTempFile(".htm");
-                    ConvertDocToHtml(args[0], tmpfile);
+                    ConvertDocToHtml(filetouse, tmpfile);
                     System.Console.WriteLine("converted: " + tmpfile);
                     filetouse = tmpfile;
                 }
 
-                else { filetouse = args[0];  }
+                else { filetouse = OverrideFile;  }
 
                 System.Console.WriteLine("using file: " + filetouse);
                 HtmlDocument doc = new HtmlDocument();
@@ -94,7 +98,7 @@ namespace ConvertDocFiles
                 String ActualHeadingText = "";
                 String line_to_use="";
                 HtmlNode[] nodearray;
-                var findclasses = doc.DocumentNode.SelectNodes("//*");
+                var findclasses = doc.DocumentNode.SelectNodes("//body/*");
                 var outputclasses = new HtmlNodeCollection(null);
                 int counter = 0;
                 String newstr;
@@ -131,10 +135,8 @@ namespace ConvertDocFiles
                     if (inCorrectHeading)
                     {
                         outputclasses.Add(node);
-
                         switch (node.Name)
                         {
-
                             case "p":
                                 {
                                     inTable = false;
@@ -172,7 +174,6 @@ namespace ConvertDocFiles
                                     }
                                     else
                                     {
-                                      
                                         beforechar = "\"";
                                     }
                                     System.Console.WriteLine("cell");
