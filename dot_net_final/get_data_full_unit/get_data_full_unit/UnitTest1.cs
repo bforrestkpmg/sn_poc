@@ -42,8 +42,16 @@ namespace get_data_full_unit
         {
             GetDataConvertAndExtract.ConvertGetData g = new GetDataConvertAndExtract.ConvertGetData();
             String tmpfile = g.GetTempFile(".blah.test");
-            g.WriteFile(tmpfile, "hello there");
+            Boolean res =  g.WriteFile(tmpfile, "hello there");
+            Assert.IsTrue(res, "Write file not true");
             Assert.IsTrue(File.Exists(tmpfile), "file not written");
+        }
+        [TestMethod]
+        public void TestWritesFileFailsIfInvalidFilename()
+        {
+            GetDataConvertAndExtract.ConvertGetData g = new GetDataConvertAndExtract.ConvertGetData();
+            Boolean res = g.WriteFile("blah blah/blah", "hello there");
+            Assert.IsFalse(res, "Write file not trapping errors");
         }
     }
 }

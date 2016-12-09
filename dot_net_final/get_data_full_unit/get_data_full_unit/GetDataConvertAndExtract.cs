@@ -51,15 +51,24 @@ namespace GetDataConvertAndExtract
         }
 
 
-        public void WriteFile(String fn, String buffer)
+        public Boolean WriteFile(String fn, String buffer)
         {
             string[] lines = buffer.Split(new string[] { Environment.NewLine }, StringSplitOptions.None);
+            try
+            {
 
             using (StreamWriter outputFile = new StreamWriter(@fn))
             {
                 foreach (string line in lines)
                     outputFile.WriteLine(line);
             }
+
+            }
+            catch
+            {
+                return(false);
+            }
+            return(true);
         }
 
         public static void ExtractSection(String filename, ref String return_buffer, String headingtext)
