@@ -20,7 +20,7 @@ namespace GetDataConvertAndExtract
             return fileName;
         }
         //returns extension
-        public static string GetExt(String filename)
+        public  string GetExt(String filename)
         {
             return Path.GetExtension(filename);
         }
