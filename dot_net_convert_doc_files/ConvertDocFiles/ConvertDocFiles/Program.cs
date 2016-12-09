@@ -65,7 +65,7 @@ namespace ConvertDocFiles
         {
             static void Main(string[] args)
             {
-                String OverrideFile =  @"S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable.htm";
+                String OverrideFile = "";//  @"S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable.htm";
                 String filetouse = "";
                 Console.BufferHeight = 999;
                 Console.BufferWidth = 200;
@@ -77,16 +77,13 @@ namespace ConvertDocFiles
                 System.Console.WriteLine("file: " + filetouse);
                 String extension = GetExt(filetouse);
                 System.Console.WriteLine("extension: " + extension);
-                if (extension.StartsWith(".htm"))
+                if (!extension.StartsWith(".htm"))
                 {
                     String tmpfile = GetTempFile(".htm");
                     ConvertDocToHtml(filetouse, tmpfile);
                     System.Console.WriteLine("converted: " + tmpfile);
                     filetouse = tmpfile;
                 }
-
-                else { filetouse = OverrideFile;  }
-
                 System.Console.WriteLine("using file: " + filetouse);
                 HtmlDocument doc = new HtmlDocument();
                 doc.Load(filetouse, Encoding.GetEncoding("iso-8859-1"));
@@ -98,7 +95,7 @@ namespace ConvertDocFiles
                 String ActualHeadingText = "";
                 String line_to_use="";
                 HtmlNode[] nodearray;
-                var findclasses = doc.DocumentNode.SelectNodes("//body/*");
+                var findclasses = doc.DocumentNode.SelectNodes("//*");
                 var outputclasses = new HtmlNodeCollection(null);
                 int counter = 0;
                 String newstr;
@@ -114,7 +111,7 @@ namespace ConvertDocFiles
                     afterchar = "";
                     beforechar = "";
                     // relies on the fact that word docs are flat within body & div
-                    //System.Console.WriteLine("Looking at node: " + node.Name + ", text: " + node.InnerText);
+                    System.Console.WriteLine("Looking at node: " + node.Name + ", text: " + node.InnerText);
 
                     if ((node.ParentNode.Name != "body") && (node.ParentNode.Name != "div")  && (node.ParentNode.Name != "table") && (node.ParentNode.Name != "tr")) { continue; }
                     System.Console.WriteLine("Looking at node: " + node.Name + ", parent: " + node.ParentNode.Name);
@@ -140,22 +137,17 @@ namespace ConvertDocFiles
                             case "p":
                                 {
                                     inTable = false;
-                                    System.Console.WriteLine("In para");
-                                    beforechar = Environment.NewLine;
-                                    afterchar = Environment.NewLine;
-                                    line_to_use = node.InnerText;
+                                   
+                                        beforechar = Environment.NewLine;
+                                        afterchar = Environment.NewLine;
+                                        line_to_use = node.InnerText;
+                                   
                                     break;
                                 }
-                            case "table":
-                                {
-                                    System.Console.WriteLine("table");
-                                    afterchar = Environment.NewLine;
-                                    //bufferchar = "_n_";
-                                    inTable = true;
-                                    break;
-                                }
+
                             case "tr":
                                 {
+                                    inTable = true;
                                     System.Console.WriteLine("row");
                                     beforechar = Environment.NewLine;
                                     afterchar = Environment.NewLine;
@@ -166,7 +158,7 @@ namespace ConvertDocFiles
                                 }
                             case "td":
                                 {
-                                    
+                                    inTable = true;
                                     if (First)
                                     {
                                         beforechar = Environment.NewLine + "\"";
