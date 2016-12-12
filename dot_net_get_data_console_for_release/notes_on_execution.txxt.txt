@@ -1,0 +1,53 @@
+GetDataFinalRelease.exe "https://sntestportal.portalfront.com/_layouts/WordViewer.aspx?id=/Shared%20Documents/TestDoc_DocWithHeading_andHeadingNumber.docx" "Heading 1"
+
+
+
+GetDataFinalRelease.exe S:\test\fixtures\files\QuoteAsTable_simplified.docx "Quote Costs"
+GetDataFinalRelease.exe S:\test\fixtures\files\QuoteAsTable_simplified.docx "Bill of Materials"
+
+GetDataFinalRelease.exe https://sntestportal.portalfront.com/_layouts/WordViewer.aspx?id=/Shared%20Documents/QuoteAsTable_simplified.docx "Quote Costs"
+
+GetDataFinalRelease.exe https://sntestportal.portalfront.com/_layouts/WordViewer.aspx?id=/Shared%20Documents/QuoteAsTable_simplified.docx "Bill of Materials"
+
+S:\dot_net_get_data_console_for_release\GetDataFinalRelease\GetDataFinalRelease\bin\Debug>S:\dot_net_get_data_console_for_release\GetDataFinalRelease\GetDataFinalRelease\bin\Debug\GetDataFinalRelease.
+exe S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber.docx "Heading 1"
+Using File: S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber.docx
+Using localfile: S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber.docx
+converting doc
+extracted:
+Text in heading 1
+
+Test in heading 1 line 2
+
+<response>
+  <paragraph>
+Text in heading 1
+
+Test in heading 1 line 2
+</paragraph>
+</response>
+
+S:\dot_net_get_data_console_for_release\GetDataFinalRelease\GetDataFinalRelease\bin\Debug>GetDataFinalRelease.exe "https://sntestportal.portalfront.com/_layouts/WordViewer.aspx?id=/Shared%20Documents/TestDoc_DocWithHeading_andHeadingNumber.docx" "Heading 1"
+Using File: S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable.docx
+Using localfile: S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable.docx
+converting doc
+extracted:
+Text in heading 1
+
+Test in heading 1 line 2
+
+Table head 1    Table head 2    Table head 3    Table head 4
+Cell 1  Cell 2  Cell 3  Cell 4
+Cell 5  Cell 6  Cell 7  Cell 8
+<response>
+  <paragraph>
+Text in heading 1
+
+Test in heading 1 line 2
+
+Table head 1    Table head 2    Table head 3    Table head 4
+Cell 1  Cell 2  Cell 3  Cell 4
+Cell 5  Cell 6  Cell 7  Cell 8  </paragraph>
+</response>
+
+S:\dot_net_get_data_console_for_release\GetDataFinalRelease\GetDataFinalRelease\bin\Debug>
