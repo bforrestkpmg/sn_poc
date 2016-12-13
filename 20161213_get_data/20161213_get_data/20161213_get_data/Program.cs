@@ -15,7 +15,9 @@ using Word = Microsoft.Office.Interop.Word;
 using HtmlAgilityPack;
 using System.Threading.Tasks;
 using System.ServiceProcess;
-
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using System.IO.Packaging;
 
 namespace GetDataConvertAndExtract
 {
@@ -42,20 +44,27 @@ namespace GetDataConvertAndExtract
         {
             try
             {
-                Word._Application newApp = new Word.Application();
-                Word.Documents d = newApp.Documents;
-                object Unknown = Type.Missing;
-                Word.Document od = d.Open(ref Sourcepath,  ReadOnly: true, Visible: false);
-                object format = Word.WdSaveFormat.wdFormatFilteredHTML;
 
-                newApp.ActiveDocument.SaveAs(ref TargetPath, ref format,
-                            ref Unknown, ref Unknown, ref Unknown,
-                            ref Unknown, ref Unknown, ref Unknown,
-                            ref Unknown, ref Unknown, ref Unknown,
-                            ref Unknown, ref Unknown, ref Unknown,
-                            ref Unknown, ref Unknown);
+                Package wordPackage = Package.Open(Sourcepath.ToString(), FileMode.Open, FileAccess.Read);
 
-                newApp.Documents.Close(Word.WdSaveOptions.wdDoNotSaveChanges);
+                // Open a WordprocessingDocument based on a package.
+                using (WordprocessingDocument wordDocument = WordprocessingDocument.Open(wordPackage)) ;
+
+
+                //    Word._Application newApp = new Word.Application();
+                //Word.Documents d = newApp.Documents;
+                //object Unknown = Type.Missing;
+                //Word.Document od = d.Open(ref Sourcepath,  ReadOnly: true, Visible: false);
+                //object format = Word.WdSaveFormat.wdFormatFilteredHTML;
+
+                //newApp.ActiveDocument.SaveAs(ref TargetPath, ref format,
+                //            ref Unknown, ref Unknown, ref Unknown,
+                //            ref Unknown, ref Unknown, ref Unknown,
+                //            ref Unknown, ref Unknown, ref Unknown,
+                //            ref Unknown, ref Unknown, ref Unknown,
+                //            ref Unknown, ref Unknown);
+
+                //newApp.Documents.Close(Word.WdSaveOptions.wdDoNotSaveChanges);
             }
             catch (Exception ex)
             {

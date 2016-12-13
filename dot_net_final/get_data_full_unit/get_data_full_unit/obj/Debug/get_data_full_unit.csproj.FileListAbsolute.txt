@@ -49,3 +49,5 @@ S:\dot_net_final\get_data_full_unit\get_data_full_unit\bin\Debug\Microsoft.Visua
 S:\dot_net_final\get_data_full_unit\get_data_full_unit\bin\Debug\Microsoft.VisualStudio.CoreUtility.xml
 S:\dot_net_final\get_data_full_unit\get_data_full_unit\obj\Debug\get_data_full_unit.dll
 S:\dot_net_final\get_data_full_unit\get_data_full_unit\obj\Debug\get_data_full_unit.pdb
+S:\dot_net_final\get_data_full_unit\get_data_full_unit\bin\Debug\DocumentFormat.OpenXml.dll
+S:\dot_net_final\get_data_full_unit\get_data_full_unit\bin\Debug\DocumentFormat.OpenXml.xml

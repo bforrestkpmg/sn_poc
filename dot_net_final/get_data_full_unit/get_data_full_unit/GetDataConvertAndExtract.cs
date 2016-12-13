@@ -8,6 +8,11 @@ using System.Text.RegularExpressions;
 using Word = Microsoft.Office.Interop.Word;
 using HtmlAgilityPack;
 using System.Threading.Tasks;
+using System.IO;
+using System.IO.Packaging;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using DocumentFormat.OpenXml;
 
 namespace GetDataConvertAndExtract
 {
@@ -25,6 +30,67 @@ namespace GetDataConvertAndExtract
         {
             return Path.GetExtension(filename);
         }
+        public static void op_text(String s)
+        {
+            System.Diagnostics.Debug.WriteLine(s);
+            Console.WriteLine(s);
+        }
+
+        public Boolean ConvertDocToXMLTree(object Sourcepath, ref List<OpenXmlElement> param_listOfDocElements)
+        {
+            List<OpenXmlElement> listOfDocElements = new List<OpenXmlElement>();
+            try
+            {
+
+
+                StringBuilder result = new StringBuilder();
+                WordprocessingDocument wordProcessingDoc = WordprocessingDocument.Open(Sourcepath.ToString(), true);
+                IEnumerable<Paragraph> paragraphElement = wordProcessingDoc.MainDocumentPart.Document.Descendants<Paragraph>();
+                foreach (OpenXmlElement section in wordProcessingDoc.MainDocumentPart.Document.Body.Elements<OpenXmlElement>())
+                {
+                    op_text("in: " + section.GetType().ToString());
+                    if ((section.GetType().Name == "Paragraph") || (section.GetType().Name == "Table"))
+                    {
+                        listOfDocElements.Add(section);
+                        op_text("section: " + section.InnerText.ToString());
+                    }
+                } // foreach
+            }
+            catch (Exception ex)
+            {
+                op_text("Error to XML(" + ex.ToString() + ") converting input file: " + Sourcepath);
+                return (false);
+            }
+            param_listOfDocElements = listOfDocElements;
+            return (true);
+        }
+
+        public Boolean ConvertDocToXML(object Sourcepath, object TargetPath)
+        {
+            try
+            {
+                StringBuilder result = new StringBuilder();
+                WordprocessingDocument wordProcessingDoc = WordprocessingDocument.Open(Sourcepath.ToString(), true);
+                IEnumerable<Paragraph> paragraphElement = wordProcessingDoc.MainDocumentPart.Document.Descendants<Paragraph>();
+                op_text("here");
+                foreach (OpenXmlElement section in wordProcessingDoc.MainDocumentPart.Document.Body.Elements<OpenXmlElement>())
+                {
+
+                    if (section.GetType().Name == "Paragraph")
+                    {
+                        Paragraph par = (Paragraph)section;
+                        op_text("para: " + par.InnerText.ToString());
+                    }
+                    } // foreach
+            }
+            catch (Exception ex)
+            {
+                op_text("Error to XML(" + ex.ToString() + ") converting input file: " + Sourcepath + ", to: " + TargetPath);
+                return (false);
+            }
+            return (true);
+        }
+
 
         public Boolean ConvertDocToHtml(object Sourcepath, object TargetPath)
         {

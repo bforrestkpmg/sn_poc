@@ -3,8 +3,13 @@ using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
+using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Test.Helpers;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using DocumentFormat.OpenXml;
+using System.IO.Packaging;
 namespace Test.Helpers
 {
     public static class FileAssert
@@ -97,7 +102,33 @@ namespace get_data_full_unit
     [TestClass]
     public class ConvertFiles
     {
-               
+        [TestMethod]
+        public void ConvertDocWithTableToXMLStream()
+        {
+              String base_file = @"S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable";
+            String test_docx = base_file + ".docx";
+            String to_comparehtml = base_file + "_reference.xml";
+            GetDataConvertAndExtract.ConvertGetData g = new GetDataConvertAndExtract.ConvertGetData();
+            List<OpenXmlElement> listOfDocElements = new List<OpenXmlElement>();
+            Boolean res = g.ConvertDocToXMLTree(test_docx, ref listOfDocElements);
+            Assert.IsTrue(res, "Convert to XML not returned ok");
+            Assert.IsFalse(true, "fail");
+        }
+
+        [TestMethod]
+        public void ConvertDocToXMLStreamWithTable()
+        {
+            String base_file = @"S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable";
+            String test_docx = base_file + ".docx";
+            String to_comparehtml = base_file + "_reference.xml";
+            GetDataConvertAndExtract.ConvertGetData g = new GetDataConvertAndExtract.ConvertGetData();
+            String tmpfile = g.GetTempFile(".xml");
+            Boolean res = g.ConvertDocToXML(test_docx, tmpfile);
+            Assert.IsTrue(res, "Convert to XML not returned ok");
+            Assert.IsTrue(File.Exists(tmpfile), "file not written");
+            FileAssert.AreEqual(tmpfile, to_comparehtml);
+        }
+
         [TestMethod]
         public void ConvertDocToHtmlOK()
         {
