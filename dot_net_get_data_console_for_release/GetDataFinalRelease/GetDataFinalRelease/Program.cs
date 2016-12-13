@@ -262,7 +262,7 @@ namespace GetDataConvertAndExtract
                     }
                     if (inHeaderText.StartsWith("Heading"))
                     {
-                        if (textNode.InnerText == HeadingText)
+                        if (textNode.InnerText.Contains(HeadingText))
                         {
                             inCorrectHeader = true;
                         }
@@ -421,8 +421,8 @@ namespace Final_Get_Data_Console
 
         public static void op_text(String s)
         {
-            System.Diagnostics.Debug.WriteLine(s);
-            Console.WriteLine(s);
+//            System.Diagnostics.Debug.WriteLine(s);
+ //           Console.WriteLine(s);
         }
 
         public static Boolean parse_args(String[] args)
@@ -468,7 +468,7 @@ namespace Final_Get_Data_Console
                 op_text("Using File: " + filename_to_use);
                 if (filename_to_use.StartsWith("http"))
                 {
-                    actual_file_to_open = DownloadFile(args[1]);
+                    actual_file_to_open = DownloadFile(args[0]);
                     op_text("Downloaded: " + actual_file_to_open);
                 }
                 else {
@@ -597,7 +597,7 @@ namespace Final_Get_Data_Console
         {
             var client = new WebClient();
 
-            client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(client_DownloadFileCompleted);
+         //   client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(client_DownloadFileCompleted);
             using (client)
             {
                 client.Headers.Add("X-FORMS_BASED_AUTH_ACCEPTED", "f");
@@ -607,7 +607,7 @@ namespace Final_Get_Data_Console
                 try
                 {
                     Uri ur = new Uri(webUrl + '/' + fileRelativeUrl);
-                    client.DownloadFileAsync(ur, localfile);
+                    client.DownloadFile(ur, localfile);
                 }
                 catch (WebException wex)
                 {
@@ -628,11 +628,11 @@ namespace Final_Get_Data_Console
             // TODO make these from environment variables
             const String username = "bforrest@kpmg.com.au";
             const String password = "mypassw0rd+";
-          //  op_text("DownloadFile URI: " + urlfilename);
+          // op_text("DownloadFile URI: " + urlfilename);
             System.Uri uri = new System.Uri(urlfilename);
 
             String just_file = uri.AbsolutePath;
-            String URL = uri.AbsoluteUri;
+            String URL = uri.Scheme + "://" + uri.Host;
 
             String extension = GetExt(urlfilename);
             tmp_file = GetTempFile(extension);
