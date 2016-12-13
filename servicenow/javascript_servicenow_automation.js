@@ -102,8 +102,16 @@ function find_item_details_for_sow_id(id, description_text) {
 	for(var i = 0;i < lines.length;i++){
 		theline=lines[i];
 		// have we found the top level item e.g.  description blah (asset id) qty price etc....
-		reg='(.*)\\(' + regExpEscape(id) + '\\).*';
+		reg='(.*)\(' + regExpEscape(id) + '\).*';
+		// debug("reg: " + reg);
+		// debug("finding string: " + id.toString());
+		// debug("comparing with: " + theline);
+
       matches=theline.match(reg);
+ //      if  (matches !== null)
+ //      {
+	// 	debug("matched the line: " + matches.toString());
+	// }
 
       // yes so record this asset, now mark the fact we keep going
        if (matches !== null) {
@@ -174,11 +182,22 @@ var sow_bill_of_materials;
 var detail_bom_info;
 
 // // example with 2 asset ids
-sow_bill_of_materials =  "1.0	WX-C9999-X	Cat4500 E-Series 6-Slot Chassis fan no ps	2	$7,461.75 \n1.1 WS-X4748-RJ45-E	Catalyst 4500 E-Series 48-Port10/100/1000 Non-Bl;ocking	2	$10,449.44\n2.0	WS-c4999-F	Cat4500 E-Series 6-Slot Chassis fan no ps	2	$7,461.75\n2.1	WS-X4748-RJ45-E	Cataqlyst 4500 E-Series 48-Port 10/100/1000 Non-Blcoking	2	$7,461.75";
+// sow_bill_of_materials =  "1.0	WX-C9999-X	Cat4500 E-Series 6-Slot Chassis fan no ps	2	$7,461.75 \n1.1 WS-X4748-RJ45-E	Catalyst 4500 E-Series 48-Port10/100/1000 Non-Bl;ocking	2	$10,449.44\n2.0	WS-c4999-F	Cat4500 E-Series 6-Slot Chassis fan no ps	2	$7,461.75\n2.1	WS-X4748-RJ45-E	Cataqlyst 4500 E-Series 48-Port 10/100/1000 Non-Blcoking	2	$7,461.75";
 // use this example with abgove sow_bill_of_materails and the components will be empoty
 // detail_bom_info = "lakdsjflkadjsf lkadjsfladsj flkj afdslkj adslkfj aldfskj fa";
 
- detail_bom_info = "Pricing Table Notes: \n \n 1.	A Contract Variation will be executed between the parties to add the incremental charge to the existing ‘TWS Service 3 – Data Centre to Data Centre’ Resource Unit\n 2.	This solution will be delivered under the T&Cs of the existing DNV agreement between Qantas and Telstra. A contract variation will be required to add some new Resource Units (price points), otherwise the service model will be as per the existing agreement\n \n 22\n \n Once Off Charges\n \n \n Consultancy Services ~ GST Excl	Units	Unit Price	Extended Price\n \n \n Proramme Support / Imlementation Da - 8 hours\n 5	1135.68	$5,678.40\n \n Ongoing Resource Unit Charges\n Additional Resource Units -GST Excl	Quanity	RU Price(per month)	Unit Extended Price	Total Contract Value\n Firewall-Infrastructure-New-Complex (WX-C9999-X)	2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support line 1\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline2\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2\t$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY\t2\t$     324.44	$   648.88	$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)	$    470.97 $   1,883.88	$  90,426.24\n"
+ // detail_bom_info = "Pricing Table Notes: \n \n 1.	A Contract Variation will be executed between the parties to add the incremental charge to the existing ‘TWS Service 3 – Data Centre to Data Centre’ Resource Unit\n 2.	This solution will be delivered under the T&Cs of the existing DNV agreement between Qantas and Telstra. A contract variation will be required to add some new Resource Units (price points), otherwise the service model will be as per the existing agreement\n \n 22\n \n Once Off Charges\n \n \n Consultancy Services ~ GST Excl	Units	Unit Price	Extended Price\n \n \n Proramme Support / Imlementation Da - 8 hours\n 5	1135.68	$5,678.40\n \n Ongoing Resource Unit Charges\n Additional Resource Units -GST Excl	Quanity	RU Price(per month)	Unit Extended Price	Total Contract Value\n Firewall-Infrastructure-New-Complex (WX-C9999-X)	2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support line 1\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline2\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2\t$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY\t2\t$     324.44	$   648.88	$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)	$    470.97 $   1,883.88	$  90,426.24\n"
+
+ // test data from get_data.exe testsingleassetid1
+// sow_bill_of_materials="1.0\tWS-C4999-E\tCat4500 "
+//  detail_bom_info = "1.0\tWS-C4999-E\tCat4500 E-Series 6-Slot Chassis fan no ps\t2\t$7,461.75 \n1.1 WS-X4748-RJ45-E Catalyst 4500 E-Series 48-Port10/100/1000 Non-Bl;ocking\t2\t$10,449.44\n2.0\tWS-c4999-F\tCat4500 E-Series 6-Slot Chassis fan no ps\t2\t$7,461.75\n2.1\tWS-X4748-RJ45-E Cataqlyst 4500 E-Series 48-Port 10/100/1000 Non-Blcoking\t2\t$7,461.75"
+
+
+
+// test data from get_data.exe testsingleassetid2
+sow_bill_of_materials="1.0\tWS-C4999-E\tCat4500 E-Series 6-Slot Chassis fan no ps\t2\t$7,461.75 \n1.1 WS-X4748-RJ45-E\tCatalyst 4500 E-Series 48-Port10/100/1000 Non-Bl;ocking 2\t$10,449.44\n2.0 WS-c4999-F\tCat4500 E-Series 6-Slot Chassis fan no ps\t2\t$7,461.75\n2.1  WS-X4748-RJ45-E\tCataqlyst 4500 E-Series 48-Port 10/100/1000 Non-Blcoking\t2\t$7,461.75"
+
+ detail_bom_info = "Firewall-Infrastructure-New-Complex (WS-C4999-E)  2   $     1,837.33 $   3,674.66 $  176,383.68\n Firewall-Support line 1\t2\t$     324.44    $   648.88  $  31,146.24\nFirewall-Support xline2\t2\t$     324.44  $   648.88  $  31,146.24\nFirewall-Infrastructure-New-Complex (ASA6666)\t2\t$    - $   -    $  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2  $     1,837.33 $   3,674.66 $  176,383.68\n Firewall-Support YYYY\t2\t$     324.44  $   648.88  $  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)   $    470.97 $   1,883.88    $  90,426.24\n"
 
 // simple example for one asset id
  // sow_bill_of_materials =  "1.0	WS-c4999-F	Cat4500 ";
