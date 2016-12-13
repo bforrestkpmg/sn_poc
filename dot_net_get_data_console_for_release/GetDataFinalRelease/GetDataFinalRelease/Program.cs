@@ -11,20 +11,18 @@ using System.Xml.Linq;
 using System.Xml.Schema;
 using GetDataConvertAndExtract;
 using System.Text.RegularExpressions;
-using Word = Microsoft.Office.Interop.Word;
-using HtmlAgilityPack;
 using System.Threading.Tasks;
+using System.IO.Packaging;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Wordprocessing;
+using DocumentFormat.OpenXml;
 
 namespace GetDataConvertAndExtract
 {
     class ConvertGetData
     {
 
-        public static void op_text(String s)
-        {
-            System.Diagnostics.Debug.WriteLine(s);
-            Console.WriteLine(s);
-        }
+
         public string GetTempFile(string ext)
         {
             string fileName = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ext;
@@ -35,33 +33,97 @@ namespace GetDataConvertAndExtract
         {
             return Path.GetExtension(filename);
         }
-
-        public Boolean ConvertDocToHtml(object Sourcepath, object TargetPath)
+        public static void op_text(String s)
         {
-            try
-            {
-                Word._Application newApp = new Word.Application();
-                Word.Documents d = newApp.Documents;
-                object Unknown = Type.Missing;
-                Word.Document od = d.Open(ref Sourcepath, ReadOnly: false, ref Visible: false);
-                object format = Word.WdSaveFormat.wdFormatFilteredHTML;
-
-                newApp.ActiveDocument.SaveAs(ref TargetPath, ref format,
-                            ref Unknown, ref Unknown, ref Unknown,
-                            ref Unknown, ref Unknown, ref Unknown,
-                            ref Unknown, ref Unknown, ref Unknown,
-                            ref Unknown, ref Unknown, ref Unknown,
-                            ref Unknown, ref Unknown);
-
-                newApp.Documents.Close(Word.WdSaveOptions.wdDoNotSaveChanges);
-            }
-            catch (Exception ex)
-            {
-                op_text("Error (" + ex.ToString() + ") converting input file: " + Sourcepath + ", to: " + TargetPath);
-                return (false);
-            }
-            return (true);
+            System.Diagnostics.Debug.WriteLine(s);
+            Console.WriteLine(s);
         }
+
+        //public Boolean ConvertDocToXMLTree(object Sourcepath, ref List<OpenXmlElement> param_listOfDocElements)
+        //{
+        //    List<OpenXmlElement> listOfDocElements = new List<OpenXmlElement>();
+        //    try
+        //    {
+
+
+        //        StringBuilder result = new StringBuilder();
+        //        WordprocessingDocument wordProcessingDoc = WordprocessingDocument.Open(Sourcepath.ToString(), true);
+        //        IEnumerable<Paragraph> paragraphElement = wordProcessingDoc.MainDocumentPart.Document.Descendants<Paragraph>();
+        //        foreach (OpenXmlElement section in wordProcessingDoc.MainDocumentPart.Document.Body.Elements<OpenXmlElement>())
+        //        {
+        //            op_text("in: " + section.GetType().ToString());
+        //            if ((section.GetType().Name == "Paragraph") || (section.GetType().Name == "Table"))
+        //            {
+        //                listOfDocElements.Add(section);
+        //                op_text("section: " + section.InnerText.ToString());
+        //            }
+        //        } // foreach
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        op_text("Error to XML(" + ex.ToString() + ") converting input file: " + Sourcepath);
+        //        return (false);
+        //    }
+        //    param_listOfDocElements = listOfDocElements;
+        //    return (true);
+        //}
+
+        //public Boolean ConvertDocToXML(object Sourcepath, object TargetPath)
+        //{
+        //    try
+        //    {
+        //        StringBuilder result = new StringBuilder();
+        //        WordprocessingDocument wordProcessingDoc = WordprocessingDocument.Open(Sourcepath.ToString(), true);
+        //        IEnumerable<Paragraph> paragraphElement = wordProcessingDoc.MainDocumentPart.Document.Descendants<Paragraph>();
+        //        op_text("here");
+        //        foreach (OpenXmlElement section in wordProcessingDoc.MainDocumentPart.Document.Body.Elements<OpenXmlElement>())
+        //        {
+
+        //            if (section.GetType().Name == "Paragraph")
+        //            {
+        //                Paragraph par = (Paragraph)section;
+        //                op_text("para: " + par.InnerText.ToString());
+        //            }
+        //        } // foreach
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        op_text("Error to XML(" + ex.ToString() + ") converting input file: " + Sourcepath + ", to: " + TargetPath);
+        //        return (false);
+        //    }
+        //    return (true);
+        //}
+
+
+        //public Boolean ConvertDocToHtml(object Sourcepath, object TargetPath)
+        //{
+        //    try
+        //    {
+        //        Word._Application newApp = new Word.Application();
+        //        Word.Documents d = newApp.Documents;
+        //        object Unknown = Type.Missing;
+        //        Word.Document od = d.Open(ref Sourcepath, ref Unknown,
+        //                                 ref Unknown, ref Unknown, ref Unknown,
+        //                                 ref Unknown, ref Unknown, ref Unknown,
+        //                                 ref Unknown, ref Unknown, ref Unknown,
+        //                                 ref Unknown, ref Unknown, ref Unknown, ref Unknown);
+        //        object format = Word.WdSaveFormat.wdFormatFilteredHTML;
+
+        //        newApp.ActiveDocument.SaveAs(ref TargetPath, ref format,
+        //                    ref Unknown, ref Unknown, ref Unknown,
+        //                    ref Unknown, ref Unknown, ref Unknown,
+        //                    ref Unknown, ref Unknown, ref Unknown,
+        //                    ref Unknown, ref Unknown, ref Unknown,
+        //                    ref Unknown, ref Unknown);
+
+        //        newApp.Documents.Close(Word.WdSaveOptions.wdDoNotSaveChanges);
+        //    }
+        //    catch
+        //    {
+        //        return (false);
+        //    }
+        //    return (true);
+        //}
 
 
         public Boolean WriteFile(String fn, String buffer)
@@ -84,101 +146,256 @@ namespace GetDataConvertAndExtract
             return (true);
         }
 
-        public void ExtractSection(String filename, ref String return_buffer, String headingtext)
+        public String ReadAllTextFromDocx(String fn)
         {
-            HtmlDocument doc = new HtmlDocument();
-            doc.Load(filename, Encoding.GetEncoding("iso-8859-1"));
-            Boolean inCorrectHeading = false;
-            Boolean inTable = false;
-            return_buffer = "";
-            String extractText = "";
-            String line_to_use = "";
-            HtmlNode[] nodearray;
-            var findclasses = doc.DocumentNode.SelectNodes("//*");
-            var outputclasses = new HtmlNodeCollection(null);
-            int counter = 0;
-            String newstr;
-            String bufferchar = "";
-            String beforechar = "";
-            String afterchar = "";
-            Boolean First = true;
-            String compare_str = "";
-            foreach (HtmlNode node in findclasses)
+            StringBuilder stringBuilder;
+            using (WordprocessingDocument wordprocessingDocument = WordprocessingDocument.Open(fn, false))
             {
-                counter++;
-                newstr = "";
-                line_to_use = "";
-                afterchar = "";
-                beforechar = "";
-                // relies on the fact that word docs are flat within body & div
-                if ((node.ParentNode.Name != "body") && (node.ParentNode.Name != "div") && (node.ParentNode.Name != "table") && (node.ParentNode.Name != "tr")) { continue; }
-                //System.Console.WriteLine("Looking at node: " + node.Name + ", parent: " + node.ParentNode.Name);
-                if (node.Name.StartsWith("h"))
-                {
-                    compare_str = node.InnerText.Replace("\r", "").Replace("\n", " ");
-                    if (compare_str.Contains(headingtext))
-                    {
-                        // System.Console.WriteLine("in right heading: " + compare_str);
-                        inCorrectHeading = true;
-                        continue;
-                    }
-                    else {
-                        inCorrectHeading = false;
-                        continue;
-                    }
-                }
-                if (inCorrectHeading)
-                {
-                    outputclasses.Add(node);
-                    switch (node.Name)
-                    {
-                        case "p":
-                            {
-                                inTable = false;
-                                beforechar = Environment.NewLine;
-                                afterchar = Environment.NewLine;
-                                line_to_use = node.InnerText;
-                                break;
-                            }
+                Boolean inTable = false;
+                Boolean First = true;
+                String afterchar = "";
+                String beforechar = "";
+                Boolean inSection = false;
+                NameTable nameTable = new NameTable();
+                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(nameTable);
+                xmlNamespaceManager.AddNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main");
 
-                        case "tr":
+                string wordprocessingDocumentText;
+                using (StreamReader streamReader = new StreamReader(wordprocessingDocument.MainDocumentPart.GetStream()))
+                {
+                    wordprocessingDocumentText = streamReader.ReadToEnd();
+                }
+
+                stringBuilder = new StringBuilder(wordprocessingDocumentText.Length);
+
+                XmlDocument xmlDocument = new XmlDocument(nameTable);
+                xmlDocument.LoadXml(wordprocessingDocumentText);
+
+                XmlNodeList allNodes = xmlDocument.SelectNodes(".//w:tbl | .//w:p  |  .//w:tr | .//w:r | .//w:t | .//w:pStyle", xmlNamespaceManager);
+                foreach (XmlNode textNode in allNodes)
+                {
+
+
+                    //op_text("textnode: " + textNode.Name +  ", content: " + textNode.InnerText );
+                    switch (textNode.Name)
+                    {
+                        case "w:pStyle":
                             {
-                                inTable = true;
-                                afterchar = Environment.NewLine;
-                                First = true;
+                                //if (textNode.Value.ToString() == "Heading1")
+                                //{
+                                //    op_text("In Heading1");
+                                //    inTable = false;
+                                //}
+                                // we have a style feature
                                 break;
                             }
-                        case "td":
+                        case "w:tr":  // Row
+                            inTable = true;
+                            stringBuilder.Append(Environment.NewLine);
+                            break;
+                        case "w:t": // Text
+                            switch (textNode.ParentNode.ParentNode.ParentNode.Name)
                             {
+                                case "w:tc": // in cell or header
+                                    stringBuilder.Append("\t");
+                                    stringBuilder.Append(textNode.InnerText);
+                                    break;
+                                case "w:body": // in normal paragaph
+                                    stringBuilder.Append(Environment.NewLine);
+                                    stringBuilder.Append(textNode.InnerText);
+                                    stringBuilder.Append(Environment.NewLine);
+                                    break;
+                            }
+                            break;
+                    } // switch
+                } // foreach
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        public String ReadSectionHeadingTextFromDocx(String fn, String HeadingText)
+        {
+            StringBuilder stringBuilder;
+            op_text("fn: " + fn);
+            using (WordprocessingDocument wordprocessingDocument = WordprocessingDocument.Open(fn, false))
+            {
+                Boolean inTable = false;
+                Boolean First = true;
+                Boolean inCorrectHeader = false;
+                String afterchar = "";
+                String beforechar = "";
+                NameTable nameTable = new NameTable();
+                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(nameTable);
+                xmlNamespaceManager.AddNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main");
+
+                string wordprocessingDocumentText;
+                using (StreamReader streamReader = new StreamReader(wordprocessingDocument.MainDocumentPart.GetStream()))
+                {
+                    wordprocessingDocumentText = streamReader.ReadToEnd();
+                }
+
+                stringBuilder = new StringBuilder(wordprocessingDocumentText.Length);
+
+                XmlDocument xmlDocument = new XmlDocument(nameTable);
+                xmlDocument.LoadXml(wordprocessingDocumentText);
+                string inHeaderText = "";
+                XmlNodeList allNodes = xmlDocument.SelectNodes(".//w:tbl | .//w:p  |  .//w:tr | .//w:r | .//w:t | .//w:pStyle", xmlNamespaceManager);
+                foreach (XmlNode textNode in allNodes)
+                {
+                    inHeaderText = "";
+                    //op_text("textnode: " + textNode.Name +  ", content: " + textNode.InnerText );Value
+
+                    //  < w:p w14:paraId = "7D4723BA" w14: textId = "77777777" w: rsidR = "001116D0" w: rsidRDefault = "00C84334" w: rsidP = "004C6690" >
+                    //< w:pPr >
+                    //    < w:pStyle w:val = "Heading1" />
+                    //  </ w:pPr >
+                    //   < w:r >
+                    //       < w:t > Heading 1 </ w:t >
+                    try
+                    {
+                        inHeaderText = textNode.ParentNode.ParentNode.ChildNodes[0].ChildNodes[0].Attributes["w:val"].Value;
+                    }
+                    catch (Exception ex)
+                    {
+                        inHeaderText = "";
+                    }
+                    if (inHeaderText.StartsWith("Heading"))
+                    {
+                        if (textNode.InnerText == HeadingText)
+                        {
+                            inCorrectHeader = true;
+                        }
+                        else {
+                            inCorrectHeader = false;
+                        }
+                    }
+                    if (inCorrectHeader)
+                    {
+                        switch (textNode.Name)
+                        {
+                            case "w:tr":  // Row
                                 inTable = true;
-                                if (First)
+                                stringBuilder.Append(Environment.NewLine);
+                                break;
+                            case "w:t": // Text
+                                switch (textNode.ParentNode.ParentNode.ParentNode.Name)
                                 {
-                                    beforechar = Environment.NewLine + "";
-                                    First = false;
+                                    case "w:tc": // in cell or header
+                                        stringBuilder.Append("\t");
+                                        stringBuilder.Append(textNode.InnerText);
+                                        break;
+                                    case "w:body": // in normal paragaph
+                                        stringBuilder.Append(Environment.NewLine);
+                                        stringBuilder.Append(textNode.InnerText);
+                                        stringBuilder.Append(Environment.NewLine);
+                                        break;
                                 }
-                                else { beforechar = ""; }
-                                afterchar = "\t";
-                                line_to_use = node.InnerText;
                                 break;
-                            }
-                    } //switch
-                      //  System.Console.WriteLine("Processing node: " + node.Name + ", text: " + node.InnerText);
-                    newstr = Regex.Replace(line_to_use, "&nbsp;", " ");
-                    newstr = Regex.Replace(newstr, "\r", "");
-                    newstr = Regex.Replace(newstr, "\n", "");
-                    newstr = Regex.Replace(newstr, "[^\u0000-\u007F]", "");
-                    newstr = newstr.Trim();
-                    if (newstr != "")
-                    {
-                        // System.Console.WriteLine("Adding line: " + "beforechar: _" + beforechar + "_, newstr: _" + newstr + "_, afterchar: _" + afterchar + "_");
-                        return_buffer = return_buffer + beforechar + newstr + afterchar;
+                        } // switch
                     }
-                }
-            } //foreach
+                } // foreach
+            }
 
-        } // ExtractSection
+            return stringBuilder.ToString();
+        }
+
+        //public void OldExtractSection(String filename, ref String return_buffer, String headingtext)
+        //{
+        //    HtmlDocument doc = new HtmlDocument();
+        //    doc.Load(filename, Encoding.GetEncoding("iso-8859-1"));
+        //    Boolean inCorrectHeading = false;
+        //    Boolean inTable = false;
+        //    return_buffer = "";
+        //    String extractText = "";
+        //    String line_to_use = "";
+        //    HtmlNode[] nodearray;
+        //    var findclasses = doc.DocumentNode.SelectNodes("//*");
+        //    var outputclasses = new HtmlNodeCollection(null);
+        //    int counter = 0;
+        //    String newstr;
+        //    String bufferchar = "";
+        //    String beforechar = "";
+        //    String afterchar = "";
+        //    Boolean First = true;
+        //    String compare_str = "";
+        //    foreach (HtmlNode node in findclasses)
+        //    {
+        //        counter++;
+        //        newstr = "";
+        //        line_to_use = "";
+        //        afterchar = "";
+        //        beforechar = "";
+        //        // relies on the fact that word docs are flat within body & div
+        //        if ((node.ParentNode.Name != "body") && (node.ParentNode.Name != "div") && (node.ParentNode.Name != "table") && (node.ParentNode.Name != "tr")) { continue; }
+        //        //System.Console.WriteLine("Looking at node: " + node.Name + ", parent: " + node.ParentNode.Name);
+        //        if (node.Name.StartsWith("h"))
+        //        {
+        //            compare_str = node.InnerText.Replace("\r", "").Replace("\n", " ");
+        //            if (compare_str.Contains(headingtext))
+        //            {
+        //                // System.Console.WriteLine("in right heading: " + compare_str);
+        //                inCorrectHeading = true;
+        //                continue;
+        //            }
+        //            else {
+        //                inCorrectHeading = false;
+        //                continue;
+        //            }
+        //        }
+        //        if (inCorrectHeading)
+        //        {
+        //            outputclasses.Add(node);
+        //            switch (node.Name)
+        //            {
+        //                case "p":
+        //                    {
+        //                        inTable = false;
+        //                        beforechar = Environment.NewLine;
+        //                        afterchar = Environment.NewLine;
+        //                        line_to_use = node.InnerText;
+        //                        break;
+        //                    }
+
+        //                case "tr":
+        //                    {
+        //                        inTable = true;
+        //                        afterchar = Environment.NewLine;
+        //                        First = true;
+        //                        break;
+        //                    }
+        //                case "td":
+        //                    {
+        //                        inTable = true;
+        //                        if (First)
+        //                        {
+        //                            beforechar = Environment.NewLine + "\"";
+        //                            First = false;
+        //                        }
+        //                        else { beforechar = "\""; }
+        //                        afterchar = "\"\t";
+        //                        line_to_use = node.InnerText;
+        //                        break;
+        //                    }
+        //            } //switch
+        //              //  System.Console.WriteLine("Processing node: " + node.Name + ", text: " + node.InnerText);
+        //            newstr = Regex.Replace(line_to_use, "&nbsp;", " ");
+        //            newstr = Regex.Replace(newstr, "\r", "");
+        //            newstr = Regex.Replace(newstr, "\n", "");
+        //            newstr = Regex.Replace(newstr, "[^\u0000-\u007F]", "");
+        //            newstr = newstr.Trim();
+        //            if (newstr != "")
+        //            {
+        //                // System.Console.WriteLine("Adding line: " + "beforechar: _" + beforechar + "_, newstr: _" + newstr + "_, afterchar: _" + afterchar + "_");
+        //                return_buffer = return_buffer + beforechar + newstr + afterchar;
+        //            }
+        //        }
+        //    } //foreach
+
+        //} // ExtractSection
     }
 }
+
 
 namespace Final_Get_Data_Console
 {
@@ -244,7 +461,6 @@ namespace Final_Get_Data_Console
         {
             int exit_code = 1; //Error
             String actual_file_to_open = "";
-            String actual_file_to_parse = "";
             String extractedText = "";
             String optext_string = "";
             if (parse_args(args))
@@ -252,7 +468,7 @@ namespace Final_Get_Data_Console
                 op_text("Using File: " + filename_to_use);
                 if (filename_to_use.StartsWith("http"))
                 {
-                    actual_file_to_open = DownloadFile(args[0]);
+                    actual_file_to_open = DownloadFile(args[1]);
                     op_text("Downloaded: " + actual_file_to_open);
                 }
                 else {
@@ -261,26 +477,12 @@ namespace Final_Get_Data_Console
                     op_text("Using localfile: " + actual_file_to_open);
                 }
                 var cgd = new ConvertGetData();
-                if (!GetExt(actual_file_to_open).StartsWith(".html"))
-                {
-                    actual_file_to_parse = GetTempFile(".htm");
-
-                    if(!cgd.ConvertDocToHtml(actual_file_to_open, actual_file_to_parse))
-                    {
-                        optext_string = GenerateXMLOutput(ref empty_str, "Error converting file, from " + actual_file_to_open + ", to: " + actual_file_to_parse);
-                        exit_code = 1;
-                    }
-                }
-                else {
-                    actual_file_to_parse = actual_file_to_open;
-                }
-                cgd.ExtractSection(actual_file_to_parse, ref extractedText, section_heading);
+                extractedText =  cgd.ReadSectionHeadingTextFromDocx(actual_file_to_open, section_heading);
                 op_text("extracted: " + extractedText);
                 optext_string = GenerateXMLOutput(ref extractedText, "");
                 exit_code = 0;
             }
             else {
-
                 optext_string = GenerateXMLOutput(ref empty_str, "Problem parsing arguments");
             }
             Console.WriteLine(optext_string);
@@ -387,9 +589,16 @@ namespace Final_Get_Data_Console
         {
             return Path.GetExtension(filename);
         }
+        static void client_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+            op_text("Finished Downloads");
+        }
         private static void DoDownloadFile(string webUrl, ICredentials credentials, string fileRelativeUrl, string localfile)
         {
-            using (var client = new WebClient())
+            var client = new WebClient();
+
+            client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(client_DownloadFileCompleted);
+            using (client)
             {
                 client.Headers.Add("X-FORMS_BASED_AUTH_ACCEPTED", "f");
                 client.Headers.Add("User-Agent: Other");
@@ -397,7 +606,8 @@ namespace Final_Get_Data_Console
                 String s = webUrl + '/' + fileRelativeUrl;
                 try
                 {
-                    client.DownloadFile(webUrl + '/' + fileRelativeUrl, localfile);
+                    Uri ur = new Uri(webUrl + '/' + fileRelativeUrl);
+                    client.DownloadFileAsync(ur, localfile);
                 }
                 catch (WebException wex)
                 {
@@ -406,7 +616,6 @@ namespace Final_Get_Data_Console
                         ExitError("404 trying to get file: " + s);
                     }
                 }
-                finally 
             }
 
         }
@@ -419,7 +628,9 @@ namespace Final_Get_Data_Console
             // TODO make these from environment variables
             const String username = "bforrest@kpmg.com.au";
             const String password = "mypassw0rd+";
+          //  op_text("DownloadFile URI: " + urlfilename);
             System.Uri uri = new System.Uri(urlfilename);
+
             String just_file = uri.AbsolutePath;
             String URL = uri.AbsoluteUri;
 
