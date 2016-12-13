@@ -102,6 +102,20 @@ namespace get_data_full_unit
     [TestClass]
     public class ConvertFiles
     {
+
+
+        [TestMethod]
+        public void UnitTestReadAllTextFromDocx()
+        {
+            String base_file = @"S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable.docx";
+            GetDataConvertAndExtract.ConvertGetData g = new GetDataConvertAndExtract.ConvertGetData();
+            String ret_string = g.ReadAllTextFromDocx(base_file);
+            System.Console.WriteLine("ret: " + ret_string);
+            //Assert.IsTrue(res, "Convert to XML not returned ok");
+            //Assert.IsFalse(true, "fail");
+        }
+
+
         [TestMethod]
         public void ConvertDocWithTableToXMLStream()
         {

@@ -143,6 +143,76 @@ namespace GetDataConvertAndExtract
             return(true);
         }
 
+
+        public String ReadAllTextFromDocx(String fn)
+        {
+            StringBuilder stringBuilder;
+            using (WordprocessingDocument wordprocessingDocument = WordprocessingDocument.Open(fn, false))
+            {
+                Boolean inTable = false;
+                Boolean First = true;
+                String afterchar = "";
+                String beforechar = "";
+                NameTable nameTable = new NameTable();
+                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(nameTable);
+                xmlNamespaceManager.AddNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main");
+
+                string wordprocessingDocumentText;
+                using (StreamReader streamReader = new StreamReader(wordprocessingDocument.MainDocumentPart.GetStream()))
+                {
+                    wordprocessingDocumentText = streamReader.ReadToEnd();
+                }
+
+                stringBuilder = new StringBuilder(wordprocessingDocumentText.Length);
+
+                XmlDocument xmlDocument = new XmlDocument(nameTable);
+                xmlDocument.LoadXml(wordprocessingDocumentText);
+
+                XmlNodeList allNodes = xmlDocument.SelectNodes(".//w:tbl | .//w:p  |  .//w:tr | .//w:r | .//w:t | .//w:pStyle", xmlNamespaceManager);
+                foreach (XmlNode textNode in allNodes)
+                {
+                   op_text("textnode: " + textNode.Name +  ", content: " + textNode.InnerText );
+                    switch (textNode.Name)
+                    {
+                        case "w:pStyle":
+                            {
+                                //if (textNode.Value.ToString() == "Heading1")
+                                //{
+                                //    op_text("In Heading1");
+                                //    inTable = false;
+                                //}
+                                // we have a style feature
+                                break;
+                            }
+                        case "w:tr":  // Row
+                            inTable = true;
+                            stringBuilder.Append(Environment.NewLine);
+                            break;
+                        case "w:r":  // Row
+                            inTable = true;
+                            stringBuilder.Append("\t");
+                            break;
+                        case "w:t": // Text
+                            switch (textNode.ParentNode.ParentNode.ParentNode.Name)
+                            {
+                                case "w:tc": // in cell or header
+                                   stringBuilder.Append("\t");
+                                   stringBuilder.Append(textNode.InnerText);
+                                    break;
+                                case "w:body": // in normal paragaph
+                                    stringBuilder.Append(Environment.NewLine);
+                                    stringBuilder.Append(textNode.InnerText);
+                                    stringBuilder.Append(Environment.NewLine);
+                                    break;
+                            }
+                          break;
+                    } // switch
+                    } // foreach
+            }
+
+            return stringBuilder.ToString();
+        }
+
         public void ExtractSection(String filename, ref String return_buffer, String headingtext)
         {
             HtmlDocument doc = new HtmlDocument();
