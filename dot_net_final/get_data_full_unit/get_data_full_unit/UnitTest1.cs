@@ -110,38 +110,35 @@ namespace get_data_full_unit
             String base_file = @"S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable.docx";
             GetDataConvertAndExtract.ConvertGetData g = new GetDataConvertAndExtract.ConvertGetData();
             String ret_string = g.ReadAllTextFromDocx(base_file);
-            System.Console.WriteLine("ret: " + ret_string);
-            //Assert.IsTrue(res, "Convert to XML not returned ok");
-            //Assert.IsFalse(true, "fail");
+            String expected_str = @" Heading 1
+
+Text in heading 1
+
+Test in heading 1 line 2
+
+Table head 1	Table head 2	Table head 3	Table head 4
+	Cell 1	Cell 2	Cell 3	Cell 4
+	Cell 5	Cell 6	Cell 7	Cell 8
+Heading 2
+
+Text in heading 2
+
+Test in heading 2 line 2
+
+";
+            Regex r = new Regex("Table head 1	Table head 2	Table head 3	Table head ", RegexOptions.Multiline);
+            Match m = r.Match(ret_string);
+            Assert.IsTrue(m.Success, "Cannot match output string, table head");
+            r = new Regex("	Cell 1	Cell 2	Cell 3	Cell 4", RegexOptions.Multiline);
+            m = r.Match(ret_string);
+            Assert.IsTrue(m.Success, "Cannot match output string, table 2nd row");
+            r = new Regex("Heading 1", RegexOptions.Multiline);
+            m = r.Match(ret_string);
+            Assert.IsTrue(m.Success, "Cannot match output string, Heading 1");
         }
 
 
-        [TestMethod]
-        public void ConvertDocWithTableToXMLStream()
-        {
-              String base_file = @"S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable";
-            String test_docx = base_file + ".docx";
-            String to_comparehtml = base_file + "_reference.xml";
-            GetDataConvertAndExtract.ConvertGetData g = new GetDataConvertAndExtract.ConvertGetData();
-            List<OpenXmlElement> listOfDocElements = new List<OpenXmlElement>();
-            Boolean res = g.ConvertDocToXMLTree(test_docx, ref listOfDocElements);
-            Assert.IsTrue(res, "Convert to XML not returned ok");
-            Assert.IsFalse(true, "fail");
-        }
 
-        [TestMethod]
-        public void ConvertDocToXMLStreamWithTable()
-        {
-            String base_file = @"S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable";
-            String test_docx = base_file + ".docx";
-            String to_comparehtml = base_file + "_reference.xml";
-            GetDataConvertAndExtract.ConvertGetData g = new GetDataConvertAndExtract.ConvertGetData();
-            String tmpfile = g.GetTempFile(".xml");
-            Boolean res = g.ConvertDocToXML(test_docx, tmpfile);
-            Assert.IsTrue(res, "Convert to XML not returned ok");
-            Assert.IsTrue(File.Exists(tmpfile), "file not written");
-            FileAssert.AreEqual(tmpfile, to_comparehtml);
-        }
 
         [TestMethod]
         public void ConvertDocToHtmlOK()

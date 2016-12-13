@@ -171,7 +171,7 @@ namespace GetDataConvertAndExtract
                 XmlNodeList allNodes = xmlDocument.SelectNodes(".//w:tbl | .//w:p  |  .//w:tr | .//w:r | .//w:t | .//w:pStyle", xmlNamespaceManager);
                 foreach (XmlNode textNode in allNodes)
                 {
-                   op_text("textnode: " + textNode.Name +  ", content: " + textNode.InnerText );
+                   //op_text("textnode: " + textNode.Name +  ", content: " + textNode.InnerText );
                     switch (textNode.Name)
                     {
                         case "w:pStyle":
@@ -187,10 +187,6 @@ namespace GetDataConvertAndExtract
                         case "w:tr":  // Row
                             inTable = true;
                             stringBuilder.Append(Environment.NewLine);
-                            break;
-                        case "w:r":  // Row
-                            inTable = true;
-                            stringBuilder.Append("\t");
                             break;
                         case "w:t": // Text
                             switch (textNode.ParentNode.ParentNode.ParentNode.Name)
