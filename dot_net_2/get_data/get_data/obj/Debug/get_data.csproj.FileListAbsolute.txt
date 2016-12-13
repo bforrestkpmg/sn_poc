@@ -1,6 +1,0 @@
-P:\dot_net_2\get_data\get_data\bin\Debug\get_data.exe.config
-P:\dot_net_2\get_data\get_data\obj\Debug\get_data.csprojResolveAssemblyReference.cache
-P:\dot_net_2\get_data\get_data\bin\Debug\get_data.exe
-P:\dot_net_2\get_data\get_data\bin\Debug\get_data.pdb
-P:\dot_net_2\get_data\get_data\obj\Debug\get_data.exe
-P:\dot_net_2\get_data\get_data\obj\Debug\get_data.pdb
