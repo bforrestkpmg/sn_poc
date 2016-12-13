@@ -44,7 +44,7 @@ namespace GenDocUnitTesting
 
     } // Test Support Functions
     [TestClass]
-    public class GenDocUnitTestingOpenFile
+    public class GenDocUnitTestingArgParsing
     {
         [TestMethod]
         public void ParseArgsOK()
@@ -72,5 +72,32 @@ namespace GenDocUnitTesting
         public void ParseArgsLessGreater3() { Assert.Inconclusive(); }
         [TestMethod]
         public void ParseArgsTeestMode() { Assert.Inconclusive(); }
+    }
+    [TestClass]
+    public class GenDocUnitTestingOpenFile
+    {
+        [TestMethod]
+        public void OpenExcelFile()
+        {
+            Assert.Inconclusive();
+        }
+        [TestMethod]
+        public void OpenExcelFileErrorNoSuchFile()
+        {
+            Assert.Inconclusive();
+        }
+    }
+    public class GenDocUnitTestingPopulateNamedCell
+    {
+        [TestMethod]
+        public void PopulateNamedCells()
+        {
+            Assert.Inconclusive();
+        }
+        [TestMethod]
+        public void PopulateNamedCellsErrorNoCellNAme()
+        {
+            Assert.Inconclusive();
+        }
     }
 }
