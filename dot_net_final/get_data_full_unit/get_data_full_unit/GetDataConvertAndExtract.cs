@@ -143,7 +143,6 @@ namespace GetDataConvertAndExtract
             return(true);
         }
 
-
         public String ReadAllTextFromDocx(String fn)
         {
             StringBuilder stringBuilder;
@@ -153,6 +152,7 @@ namespace GetDataConvertAndExtract
                 Boolean First = true;
                 String afterchar = "";
                 String beforechar = "";
+                Boolean inSection = false;
                 NameTable nameTable = new NameTable();
                 XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(nameTable);
                 xmlNamespaceManager.AddNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main");
@@ -171,7 +171,9 @@ namespace GetDataConvertAndExtract
                 XmlNodeList allNodes = xmlDocument.SelectNodes(".//w:tbl | .//w:p  |  .//w:tr | .//w:r | .//w:t | .//w:pStyle", xmlNamespaceManager);
                 foreach (XmlNode textNode in allNodes)
                 {
-                   //op_text("textnode: " + textNode.Name +  ", content: " + textNode.InnerText );
+
+
+                    //op_text("textnode: " + textNode.Name +  ", content: " + textNode.InnerText );
                     switch (textNode.Name)
                     {
                         case "w:pStyle":
@@ -192,8 +194,8 @@ namespace GetDataConvertAndExtract
                             switch (textNode.ParentNode.ParentNode.ParentNode.Name)
                             {
                                 case "w:tc": // in cell or header
-                                   stringBuilder.Append("\t");
-                                   stringBuilder.Append(textNode.InnerText);
+                                    stringBuilder.Append("\t");
+                                    stringBuilder.Append(textNode.InnerText);
                                     break;
                                 case "w:body": // in normal paragaph
                                     stringBuilder.Append(Environment.NewLine);
@@ -201,8 +203,88 @@ namespace GetDataConvertAndExtract
                                     stringBuilder.Append(Environment.NewLine);
                                     break;
                             }
-                          break;
+                            break;
                     } // switch
+                } // foreach
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        public String ReadSectionHeadingTextFromDocx(String fn, String HeadingText)
+        {
+            StringBuilder stringBuilder;
+            using (WordprocessingDocument wordprocessingDocument = WordprocessingDocument.Open(fn, false))
+            {
+                Boolean inTable = false;
+                Boolean First = true;
+                Boolean inCorrectHeader  = false;
+                String afterchar = "";
+                String beforechar = "";
+                NameTable nameTable = new NameTable();
+                XmlNamespaceManager xmlNamespaceManager = new XmlNamespaceManager(nameTable);
+                xmlNamespaceManager.AddNamespace("w", "http://schemas.openxmlformats.org/wordprocessingml/2006/main");
+
+                string wordprocessingDocumentText;
+                using (StreamReader streamReader = new StreamReader(wordprocessingDocument.MainDocumentPart.GetStream()))
+                {
+                    wordprocessingDocumentText = streamReader.ReadToEnd();
+                }
+
+                stringBuilder = new StringBuilder(wordprocessingDocumentText.Length);
+
+                XmlDocument xmlDocument = new XmlDocument(nameTable);
+                xmlDocument.LoadXml(wordprocessingDocumentText);
+                string inHeaderText = "";
+                XmlNodeList allNodes = xmlDocument.SelectNodes(".//w:tbl | .//w:p  |  .//w:tr | .//w:r | .//w:t | .//w:pStyle", xmlNamespaceManager);
+                foreach (XmlNode textNode in allNodes)
+                {
+                inHeaderText = "";
+                    //op_text("textnode: " + textNode.Name +  ", content: " + textNode.InnerText );Value
+
+                    //  < w:p w14:paraId = "7D4723BA" w14: textId = "77777777" w: rsidR = "001116D0" w: rsidRDefault = "00C84334" w: rsidP = "004C6690" >
+                    //< w:pPr >
+                    //    < w:pStyle w:val = "Heading1" />
+                    //  </ w:pPr >
+                    //   < w:r >
+                    //       < w:t > Heading 1 </ w:t >
+                    try {
+                        inHeaderText = textNode.ParentNode.ParentNode.ChildNodes[0].ChildNodes[0].Attributes["w:val"].Value;
+                    }
+                    catch (Exception ex)
+                    {
+                        inHeaderText = "";
+                    }
+                    if (inHeaderText.StartsWith("Heading")) {
+                        if (textNode.InnerText == HeadingText) {
+                            inCorrectHeader = true;
+                        }
+                        else {
+                            inCorrectHeader = false;
+                        }
+                    }
+                        if (inCorrectHeader) {
+                            switch (textNode.Name) {
+                                case "w:tr":  // Row
+                                    inTable = true;
+                                    stringBuilder.Append(Environment.NewLine);
+                                    break;
+                                case "w:t": // Text
+                                    switch (textNode.ParentNode.ParentNode.ParentNode.Name)
+                                    {
+                                        case "w:tc": // in cell or header
+                                            stringBuilder.Append("\t");
+                                            stringBuilder.Append(textNode.InnerText);
+                                            break;
+                                        case "w:body": // in normal paragaph
+                                            stringBuilder.Append(Environment.NewLine);
+                                            stringBuilder.Append(textNode.InnerText);
+                                            stringBuilder.Append(Environment.NewLine);
+                                            break;
+                                    }
+                                    break;
+                            } // switch
+                        }
                     } // foreach
             }
 

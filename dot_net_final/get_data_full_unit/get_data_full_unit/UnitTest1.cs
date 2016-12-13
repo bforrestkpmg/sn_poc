@@ -137,6 +137,55 @@ Test in heading 2 line 2
             Assert.IsTrue(m.Success, "Cannot match output string, Heading 1");
         }
 
+        [TestMethod]
+        public void UnitTestReadSectionHeadingTextFromDocx()
+        {
+            String base_file = @"S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable.docx";
+            GetDataConvertAndExtract.ConvertGetData g = new GetDataConvertAndExtract.ConvertGetData();
+            String ret_string = g.ReadSectionHeadingTextFromDocx(base_file, "Heading 1");
+            String expected_str = @"Heading 1
+
+Text in heading 1
+
+Test in heading 1 line 2
+
+Table head 1	Table head 2	Table head 3	Table head 4
+	Cell 1	Cell 2	Cell 3	Cell 4
+	Cell 5	Cell 6	Cell 7	Cell 8
+";
+            Regex r = new Regex("Table head 1	Table head 2	Table head 3	Table head ", RegexOptions.Multiline);
+            Match m = r.Match(ret_string);
+            Assert.IsTrue(m.Success, "Cannot match output string, table head");
+            r = new Regex("	Cell 1	Cell 2	Cell 3	Cell 4", RegexOptions.Multiline);
+            m = r.Match(ret_string);
+            Assert.IsTrue(m.Success, "Cannot match output string, table 2nd row");
+            r = new Regex("Heading 1", RegexOptions.Multiline);
+            m = r.Match(ret_string);
+            Assert.IsTrue(m.Success, "Cannot match output string, Heading 1");
+            r = new Regex("Heading 2", RegexOptions.Multiline);
+            m = r.Match(ret_string);
+            Assert.IsFalse(m.Success, "HEading 2 is incorrectly included in text");
+        }
+
+
+        [TestMethod]
+        public void UnitTestReadSectionHeadingTextFromDocxErrorNoHEading()
+        {
+            String base_file = @"S:\test\fixtures\files\TestDoc_DocWithHeading_andHeadingNumber_IncludesTable.docx";
+            GetDataConvertAndExtract.ConvertGetData g = new GetDataConvertAndExtract.ConvertGetData();
+            String ret_string = g.ReadSectionHeadingTextFromDocx(base_file, "Heading Hello");
+            Assert.AreEqual(ret_string, "", "Expecting null string");
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(FileNotFoundException), "FileNotFound")]
+        public void UnitTestReadSectionHeadingTextFromDocxErrorNoSuchFile()
+        {
+            String base_file = @"S:\test\fixtures\files\blahblah.docx";
+            GetDataConvertAndExtract.ConvertGetData g = new GetDataConvertAndExtract.ConvertGetData();
+            String ret_string = g.ReadSectionHeadingTextFromDocx(base_file, "Heading Hello");
+            Assert.AreEqual(ret_string, null, "Expecting null string");
+        }
 
 
 
