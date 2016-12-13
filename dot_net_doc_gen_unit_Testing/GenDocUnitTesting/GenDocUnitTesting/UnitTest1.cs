@@ -49,6 +49,14 @@ namespace GenDocUnitTesting
         [TestMethod]
         public void ParseArgsOK()
         {
+            GenDocUnitTesting.GenDoc g = new GenDocUnitTesting.GenDoc();
+            String[] test_args = new String[2] { "hello", "there" };
+            String fn1 = "";
+            String fn2 = "";
+            Boolean res = g.ParseArgs(test_args, ref fn1, ref fn2);
+            Assert.IsTrue(res, "ParseArgs is false");
+            Assert.AreEqual(fn1, "hello", "first arg incorrect");
+            Assert.AreEqual(fn2, "there", "first arg incorrect");
         }
     }
 }
