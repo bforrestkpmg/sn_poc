@@ -14,6 +14,8 @@ using System.Text.RegularExpressions;
 using Word = Microsoft.Office.Interop.Word;
 using HtmlAgilityPack;
 using System.Threading.Tasks;
+using System.ServiceProcess;
+
 
 namespace GetDataConvertAndExtract
 {
@@ -43,7 +45,7 @@ namespace GetDataConvertAndExtract
                 Word._Application newApp = new Word.Application();
                 Word.Documents d = newApp.Documents;
                 object Unknown = Type.Missing;
-                Word.Document od = d.Open(ref Sourcepath, ReadOnly: false, Visible: false);
+                Word.Document od = d.Open(ref Sourcepath,  ReadOnly: true, Visible: false);
                 object format = Word.WdSaveFormat.wdFormatFilteredHTML;
 
                 newApp.ActiveDocument.SaveAs(ref TargetPath, ref format,
@@ -387,9 +389,16 @@ namespace Final_Get_Data_Console
         {
             return Path.GetExtension(filename);
         }
+        static void client_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+           op_text("Finished Downloads");
+        }
         private static void DoDownloadFile(string webUrl, ICredentials credentials, string fileRelativeUrl, string localfile)
         {
-            using (var client = new WebClient())
+            var client = new WebClient();   
+  
+            client.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(client_DownloadFileCompleted);
+            using (client)
             {
                 client.Headers.Add("X-FORMS_BASED_AUTH_ACCEPTED", "f");
                 client.Headers.Add("User-Agent: Other");
@@ -397,7 +406,8 @@ namespace Final_Get_Data_Console
                 String s = webUrl + '/' + fileRelativeUrl;
                 try
                 {
-                    client.DownloadFile(webUrl + '/' + fileRelativeUrl, localfile);
+                    Uri ur = new Uri(webUrl + '/' + fileRelativeUrl);
+                    client.DownloadFileAsync(ur, localfile);
                 }
                 catch (WebException wex)
                 {
