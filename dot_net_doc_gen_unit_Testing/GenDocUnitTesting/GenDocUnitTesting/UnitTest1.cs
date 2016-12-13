@@ -58,5 +58,19 @@ namespace GenDocUnitTesting
             Assert.AreEqual(fn1, "hello", "first arg incorrect");
             Assert.AreEqual(fn2, "there", "first arg incorrect");
         }
+        [TestMethod]
+        public void ParseArgsLessThan2()
+        {
+            GenDocUnitTesting.GenDoc g = new GenDocUnitTesting.GenDoc();
+            String[] test_args = new String[1] { "hello" };
+            String fn1 = "";
+            String fn2 = "";
+            Boolean res = g.ParseArgs(test_args, ref fn1, ref fn2);
+            Assert.IsFalse(res, "ParseArgs is true");
+        }
+        [TestMethod]
+        public void ParseArgsLessGreater3() { Assert.Inconclusive(); }
+        [TestMethod]
+        public void ParseArgsTeestMode() { Assert.Inconclusive(); }
     }
 }
