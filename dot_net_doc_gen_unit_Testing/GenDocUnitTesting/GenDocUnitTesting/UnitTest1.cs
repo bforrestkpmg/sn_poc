@@ -5,7 +5,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using DocumentFormat.OpenXml;
@@ -92,7 +91,7 @@ namespace GenDocUnitTesting
     public class GenDocUnitTestingCSVFile
     {
         [TestMethod]
-        public void TestSaveAsCSVOK()
+        public void TestSaveXLSAsCSVOK()
         {
           String testfile = @TestConstants.base_test_file_dir + @"\test_excel_simplefilecontent.xls";
           String csv_op = @TestConstants.base_test_file_dir + @"\test_excel_simplefilecontent.csv";
@@ -102,8 +101,23 @@ namespace GenDocUnitTesting
           Assert.IsTrue(File.Exists(csv_op), "file not written");
           FileAssert.AreEqual(csv_op, testfile_expected);
         }
+        [TestMethod]
         public void TestSaveAsCSVErrorFileDoesNotExist() { Assert.Inconclusive(); }
+        [TestMethod]
         public void TestSaveAsCSVErrorFileAlreadyExists() { Assert.Inconclusive(); }
+
+        [TestMethod]
+        public void TestSaveXLSXAsCSVOK()
+        {
+            String testfile = @TestConstants.base_test_file_dir + @"\test_excel_simplefilecontent.xlsx";
+            String csv_op = @TestConstants.base_test_file_dir + @"\test_excel_simplefilecontent.csv";
+            String testfile_expected = @TestConstants.base_test_file_dir + @"\refernce_test_excel_simplefilecontent.csv";
+            GenDocUnitTesting.GenDoc g = new GenDocUnitTesting.GenDoc();
+            Boolean res = g.SaveExcelXLSXAsCSV(testfile);
+            Assert.IsTrue(File.Exists(csv_op), "file not written");
+            FileAssert.AreEqual(csv_op, testfile_expected);
+        }
+
 
     }
     [TestClass]

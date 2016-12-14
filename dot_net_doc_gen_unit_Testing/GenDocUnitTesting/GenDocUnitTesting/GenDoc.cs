@@ -9,11 +9,12 @@ using DocumentFormat.OpenXml.Wordprocessing;
 using DocumentFormat.OpenXml;
 using Excel;
 using System.Data;
+using ClosedXML;
+using ClosedXML.Excel;
+using System.Data;
 
 namespace GenDocUnitTesting
 {
-
-
     class GenDoc
     {
 
@@ -23,7 +24,7 @@ namespace GenDocUnitTesting
         // based on https://www.codeproject.com/articles/246772/convert-xlsx-xls-to-csv
         // using  https://github.com/ExcelDataReader/ExcelDataReader (install with nuget ExcelDataReader)
         // ONLY works for single first sheet
-        public Boolean SaveExcelXLSAsCSV(String filename)
+        public  Boolean SaveExcelXLSAsCSV(String filename)
         {
             //String filename_only = Path.GetFileName(filename);
             //String filename_no_extention = Path.GetFileNameWithoutExtension(filename_only);
@@ -57,14 +58,92 @@ namespace GenDocUnitTesting
                     }
                 }
                 row_no++;
-                csvData += "\n";
+                csvData += Environment.NewLine;
             }
             StreamWriter csv = new StreamWriter(@csv_file_name, false);
             csv.Write(csvData);
             csv.Close();
             return (true);
         }
-        public string GetTempFile(string ext)
+        // based on
+        // http://stackoverflow.com/questions/28503437/most-efficient-way-of-coverting-a-datatable-to-csv
+        public String DataTableToCSV(DataTable datatable, char seperator)
+        {
+            int row_count = 0;
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < datatable.Columns.Count; i++)
+            {
+                sb.Append(datatable.Columns[i]);
+                if (i < datatable.Columns.Count - 1)
+                    sb.Append(seperator);
+            }
+            //sb.AppendLine();
+            sb.Append(Environment.NewLine);
+            foreach (DataRow dr in datatable.Rows)
+            {
+                row_count += 1;
+                for (int i = 0; i < datatable.Columns.Count; i++)
+                {
+                    sb.Append(dr[i].ToString());
+
+                    if (i < datatable.Columns.Count - 1)
+                        sb.Append(seperator);
+                }
+                if (row_count < datatable.Rows.Count)
+                {
+            sb.Append(Environment.NewLine);
+                }
+            }
+            return sb.ToString();
+        }
+
+        // https://msdn.microsoft.com/en-us/library/office/hh298534.aspx
+        public  Boolean SaveExcelXLSXAsCSV(String filename)
+        {
+            String dir = Path.GetDirectoryName(filename);
+            String without_extension = @dir + @"\" + Path.GetFileNameWithoutExtension(@filename);
+            String csv_file_name = @without_extension + ".csv";
+            //Create a new DataTable.
+            DataTable dt = new DataTable();
+            using (XLWorkbook workBook = new XLWorkbook(@filename) )
+            {
+                IXLWorksheet workSheet = workBook.Worksheet(1);
+                //Loop through the Worksheet rows.
+                bool firstRow = true;
+                foreach (IXLRow row in workSheet.Rows())
+                {
+                    //Use the first row to add columns to DataTable.
+                    if (firstRow)
+                    {
+                        foreach (IXLCell cell in row.Cells())
+                        {
+                            dt.Columns.Add(cell.Value.ToString());
+                        }
+                        firstRow = false;
+                    }
+                    else
+                    {
+                        //Add rows to DataTable.
+                        dt.Rows.Add();
+                        int i = 0;
+                        foreach (IXLCell cell in row.Cells())
+                        {
+                            dt.Rows[dt.Rows.Count - 1][i] = cell.Value.ToString();
+                            i++;
+                        }
+                    }
+                }
+            }   //using
+
+            String csvData = "";
+            csvData = DataTableToCSV(dt, ',');
+            StreamWriter csv = new StreamWriter(@csv_file_name, false);
+            csv.Write(csvData);
+            csv.Close();
+            return (true);
+        }
+
+        public  string GetTempFile(string ext)
         {
             string fileName = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ext;
             return fileName;

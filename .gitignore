@@ -192,4 +192,4 @@ $RECYCLE.BIN/
 # End of core ignore list, below put you custom 'per project' settings (patterns or path)
 #####
 *.dll
-
+test/fixtures/files/test_excel_simplefilecontent.csv
