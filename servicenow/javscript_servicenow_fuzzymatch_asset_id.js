@@ -109,24 +109,69 @@ function preparse(s) {
 // replace cahracters that we know  are not material
 	var t="";
     t=s.replace(/\[\-\]/g, '');
-    t=t.replace();
 	return t;
 }
 
+function regExpEscape(literal_string) {
+    return literal_string.replace(/[-[\]{}()*+!<=:?.\/\\^$|#\s,]/g, '\\$&');
+}
 
-function iterate_over_detailed_bom(s)
+function iterate_over_detailed_bom(s, id)
 {
 	var ret_array=[];
 	var cleansed_value="";
 	var remainingtext="";
 	var lines = s.split('\n');
+	var matched_line = -1;
+	var theline="";
+	var reg;
+	var splitline;
+	var matches;
+	var first;
+	var arr=[];
+	var parsed_id=preparse(id);
+	var to_fuzzy_match="";
+	var distance_measure;
+	debug("ID: " + id.toString());
 	for(var i = 0;i < lines.length;i++){
-	   ret_array.push([cleansed_value, remainingtext]);
+		theline=lines[i];
+		 reg='(.*)\(' + regExpEscape(id) + '\).*';
+		 matches=theline.match(reg);
+		 if (matches !== null) { continue; }
 
+         reg='([^\t]+)';
+		 splitline=theline.match(reg);
+		 if (splitline=== null) { continue; }
+		 first=splitline[0];
+		 remainingtext=splitline[1];
+
+         // extract () from first
+		matches=first.match(/\(([A-Z][A-Za-z0-9\-]*)\)/)
+	    if (matches === null) { continue; }
+	    debug("fuzzy before: " + matches[1]);
+	    to_fuzzy_match=preparse(matches[1]);
+	    debug("fuzzy after: " + to_fuzzy_match);
+
+	    distance_measure=Levenshtein.get(parsed_id, to_fuzzy_match);
+
+	    arr.push(to_fuzzy_match, distance_measure);
+	    debug("to match with: " + to_fuzzy_match + ", distance: " + distance_measure.toString());
+		 // find asset id within
 	}
-	return ret_array;
+	return arr;
 }
 
+function AssertIt(test, v1,v2)
+{
+  if (v1===v2)
+  {
+     debug("test: " + test + ": " + true); 	
+  }
+  else
+  {
+     debug("test: " + test + ": " + true); 	
+  }
+}
 
 
 // MAIN Start
@@ -134,8 +179,12 @@ var sow_bill_of_materials;
 var detail_bom_info;
 
 // simple example for one asset id
-sow_bill_of_materials =  "1.0	WS-c4999	Cat4500 ";
-detail_bom_info = "Firewall-Infrastructure-New-Complex (WX-C9999-X)	2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support line 1\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline2\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2\t$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY\t2\t$     324.44	$   648.88	$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)	$    470.97 $   1,883.88	$  90,426.24\n"
+sow_bill_of_materials =  "1.0	WS-4999";
+detail_bom_info = "Firewall-Infrastructure-New-Comple (Cat4999)\t2\t$1,837.33\t$   3,674.66\t$  176,383.68\n Firewall-Support line 1\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline2\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2\t$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2\t$     1,837.33\t$   3,674.66\t$  176,383.68\n Firewall-Support YYYY\t2\t$     324.44\t$   648.88\t$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)\t$    470.97\t$   1,883.88\t$  90,426.24\n"
+// var detail_bom_info="Firewall-Infrastructure-New-Complex (Cat4999)	2	$1,837.33	$   3,674.66	$  176,383.68\n Firewall-Support line 1	2	$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline2	2	$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)	2	$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)	2	$     1,837.33	$   3,674.66	$  176,383.68\n Firewall-Support YYYY	2	$     324.44	$   648.88	$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)	$    470.97	$   1,883.88	$  90,426.24\n"
 
  var distance = Levenshtein.get('Firewall – Infrastructure – New – Complex ', 'Security – Infrastructure –Firewall – New – Complex');   // 2
  debug("Test1: " + distance);
+
+ iterate_over_detailed_bom(detail_bom_info, "WS-4999");
+	
