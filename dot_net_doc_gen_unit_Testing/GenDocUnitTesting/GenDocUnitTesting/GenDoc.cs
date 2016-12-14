@@ -118,7 +118,7 @@ namespace GenDocUnitTesting
         }
 
         // https://msdn.microsoft.com/en-us/library/office/hh298534.aspx
-        public  Boolean SaveExcelXLSXAsCSV(String filename)
+        public  Boolean SaveExcelXLSXAsCSV(String filename, int SheetNum = 1)
         {
             String dir = Path.GetDirectoryName(filename);
             String without_extension = @dir + @"\" + Path.GetFileNameWithoutExtension(@filename);
@@ -127,7 +127,7 @@ namespace GenDocUnitTesting
             DataTable dt = new DataTable();
             using (XLWorkbook workBook = new XLWorkbook(@filename) )
             {
-                IXLWorksheet workSheet = workBook.Worksheet(1);
+                IXLWorksheet workSheet = workBook.Worksheet(SheetNum);
                 //Loop through the Worksheet rows.
                 bool firstRow = true;
                 foreach (IXLRow row in workSheet.Rows())
@@ -178,14 +178,14 @@ namespace GenDocUnitTesting
             workbook.SaveAs(@newname);
             return (true);
         }
-        public Boolean UpdateXLSXRange(String filename, String newname, List<RangeValuePair> ranges_xml)
+        public Boolean UpdateXLSXRange(String filename, String newname, List<RangeValuePair> ranges_xml, int worksheet_num = 1)
         {
             var workbook = new XLWorkbook(@filename);
-            var worksheet = workbook.Worksheets.Worksheet(1);
-            foreach (RangeValuePair item in ranges_xml)
-            {
-                worksheet.Cell(item.RangeName).SetValue(item.TheValue);
-            }
+            var worksheet = workbook.Worksheets.Worksheet(worksheet_num);
+            //foreach (RangeValuePair item in ranges_xml)
+            //{
+            //    worksheet.Cell(item.RangeName).SetValue(item.TheValue);
+            //}
             workbook.SaveAs(@newname);
             return (true);
         }
