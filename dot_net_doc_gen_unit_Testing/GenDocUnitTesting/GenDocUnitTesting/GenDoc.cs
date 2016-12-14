@@ -143,6 +143,17 @@ namespace GenDocUnitTesting
             return (true);
         }
 
+        public Boolean UpdateRange(String filename, String range_name, String value)
+        {
+            using (XLWorkbook workBook = new XLWorkbook(@filename))
+            {
+                IXLWorksheet workSheet = workBook.Worksheet(1);
+                ws.cell("E5").Value = "New VAlue"
+                workBook.Save();
+            }   //using
+            return (true);
+        }
+
         public  string GetTempFile(string ext)
         {
             string fileName = System.IO.Path.GetTempPath() + Guid.NewGuid().ToString() + ext;

@@ -173,7 +173,10 @@ namespace GenDocUnitTesting
         // test by opening file, saving as csv and comparing result
         public void PopulateNamedCells()
         {
-            Assert.Inconclusive();
+            String testfile = @TestConstants.base_test_file_dir + @"\Basic_Excel_2cells.xlsx";
+            String op_testfile = @TestConstants.base_test_file_dir + @"\op_Basic_Excel_2cells.xlsx";
+            GenDocUnitTesting.GenDoc g = new GenDocUnitTesting.GenDoc();
+            Boolean res = g.UpdateRange(testfile, "blah", "value");
         }
         [TestMethod]
         public void PopulateNamedCellsErrorNoCellNAme()
