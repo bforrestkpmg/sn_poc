@@ -217,6 +217,26 @@ namespace GenDocUnitTesting
             Assert.AreEqual(PopulationValues.Count, n.Count, "arays not the same - count");
         }
         [TestMethod]
+        public void TestPopulateMultipleCellsThroughRangeList()
+        {
+            List<RangeValuePair> range_data = new List<RangeValuePair>();
+            range_data.Add(new RangeValuePair() { RangeName = "cell1rangename", TheValue = "newvalue1" });
+            range_data.Add(new RangeValuePair() { RangeName = "cell2rangename", TheValue = "newvalue2" });
+            String testfile = @TestConstants.base_test_file_dir + @"\Basic_Excel_2cells.xlsx";
+            String ref_opput = @TestConstants.base_test_file_dir + @"\reference_Basic_Excel_2cells_bothpopulated.csv";
+            String new_file = @TestConstants.base_test_file_dir + @"\testgenerated_file_Basic_Excel_2cells_bothpopulated.xlsx";
+            String new_file_csv = @TestConstants.base_test_file_dir + @"\testgenerated_file_Basic_Excel_2cells_bothpopulated.csv";
+            GenDocUnitTesting.GenDoc g = new GenDocUnitTesting.GenDoc();
+            //public Boolean UpdateXLSXRange(String filename, String newname, List<RangeValuePair> ranges_xml)
+            Boolean res = g.UpdateXLSXRange(testfile, new_file, range_data);
+            Assert.IsTrue(res, "update xlsx range is false");
+            //Boolean res = g.UpdateXLSXRange(testfile, "cell2rangename", "newvalue2");
+            res = g.SaveExcelXLSXAsCSV(new_file);
+            Assert.IsTrue(res, "count not save csv");
+            FileAssert.AreEqual(new_file_csv, ref_opput);
+        }
+
+        [TestMethod]
         public void ParseSimpleXMLErrorMalFormedXML()
         {
             Assert.Inconclusive();

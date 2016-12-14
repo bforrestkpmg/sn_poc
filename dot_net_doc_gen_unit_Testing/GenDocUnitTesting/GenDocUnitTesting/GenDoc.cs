@@ -178,6 +178,17 @@ namespace GenDocUnitTesting
             workbook.SaveAs(@newname);
             return (true);
         }
+        public Boolean UpdateXLSXRange(String filename, String newname, List<RangeValuePair> ranges_xml)
+        {
+            var workbook = new XLWorkbook(@filename);
+            var worksheet = workbook.Worksheets.Worksheet(1);
+            foreach (RangeValuePair item in ranges_xml)
+            {
+                worksheet.Cell(item.RangeName).SetValue(item.TheValue);
+            }
+            workbook.SaveAs(@newname);
+            return (true);
+        }
 
         public  string GetTempFile(string ext)
         {
