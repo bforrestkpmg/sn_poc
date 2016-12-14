@@ -176,7 +176,6 @@ namespace GenDocUnitTesting
     [TestClass]
     public class GenDocUnitTestingPopulateNamedCell
     {
-
         // arg = filename, xml file
         // xml file is our populate format
         // populate excel file
@@ -193,11 +192,34 @@ namespace GenDocUnitTesting
             //Boolean res = g.UpdateXLSXRange(testfile, "cell2rangename", "newvalue2");
             res = g.SaveExcelXLSXAsCSV(new_file);
             FileAssert.AreEqual(new_file_csv, ref_opput);
+            Assert.IsTrue(res, "update xlsx range is false");
         }
         [TestMethod]
-        public void PopulateNamedCellsErrorNoCellNAme()
+        public void PopulateNamedCellsErrorNoCellName()
         {
             Assert.Inconclusive();
         }
     }
+    [TestClass]
+    public class GenDocUnitTestinParseXMLSetofRanges
+    {
+        [TestMethod]
+        public void ParseSimpleXMLOK()
+        {
+            String ip_xml = @"<populate><item><range_name>cell1rangename</range_name><value>newvalue1</value><item></populate>";
+            RangeValuePair[] n = new RangeValuePair[] { new RangeValuePair() { RangeName = "hello", TheValue = "there" } };
+            GenDocUnitTesting.GenDoc g = new GenDocUnitTesting.GenDoc();
+           GenDocUnitTesting.RangeValuePair[] PopulationValues = g.generate_array_of_values(ip_xml);
+            //            Boolean res = g.PopulateXLSXBasedOnMultipleRanges(testfile, new_file, "cell1rangename", "newvalue1");
+            Assert.IsNotNull(PopulationValues);
+            Assert.AreEqual(PopulationValues[0], n[0], "arays not the same  - content");
+            Assert.AreEqual(PopulationValues.Length, n.Length, "arays not the same - count");
+        }
+        [TestMethod]
+        public void ParseSimpleXMLErrorMalFormedXML()
+        {
+            Assert.Inconclusive();
+        }
+    }
+
 }

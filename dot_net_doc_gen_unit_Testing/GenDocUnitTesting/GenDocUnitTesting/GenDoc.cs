@@ -16,7 +16,24 @@ using System.Data;
 
 namespace GenDocUnitTesting
 {
+    public struct RangeValuePair
+    {
+        public String RangeName;
+        public String TheValue;
 
+        public RangeValuePair(String r, String v) { this.TheValue = v;
+            this.RangeName = r; }
+
+        public static bool operator ==(RangeValuePair r1, RangeValuePair r2)
+        {
+            return ((r1.RangeName == r2.RangeName) && (r1.TheValue  == r2.TheValue ));
+        }
+
+        public static bool operator !=(RangeValuePair r1, RangeValuePair r2)
+        {
+            return ((r1.RangeName != r2.RangeName) || (r1.TheValue != r2.TheValue));
+        }
+    }
 
     class GenDoc
     {
@@ -147,18 +164,11 @@ namespace GenDocUnitTesting
         }
 
         //nOTWORKING
-        public Boolean UpdateXLSRange(String filename, String range_name, String value)
+        public Boolean UpdateXLSRange(String filename, String newfilename, String range_name, String value)
         {
-            using (XLWorkbook workBook = new XLWorkbook(@filename))
-            {
-                var ws = workBook.Worksheet(1);
-               ws.Cell("E5").Value = "New VAlue";
-                workBook.SaveAs(@filename +".new.xls");
-            }   //using
-            return (true);
+            return(false);
+;
         }
-
-
 
         public Boolean UpdateXLSXRange(String filename, String newname, String range_name, String value)
         {
@@ -189,25 +199,29 @@ namespace GenDocUnitTesting
         {
             Boolean ret = false;
 
-            if (args.Length < 2)
-            {
+            if (args.Length < 2) {
                 System.Console.WriteLine("Usage:: <excel filename> <xml_file> [-test]");
             }
             // have we specified test mode we genereate specific output based on file name
             else if (args.Length >= 3)
             {
-                if ((!String.IsNullOrEmpty(args[2])) && (args[2].Equals("-test")))
-                {
+                if ((!String.IsNullOrEmpty(args[2])) && (args[2].Equals("-test"))) {
                     ret = true;
                 }
             }
-            else
-            {
+            else {
                 excel_filename = args[0];
                 xml_file = args[1];
                 ret = true;
             }
             return (ret);
         }
+
+        public RangeValuePair[] generate_array_of_values(String ip_xml)
+        {
+           RangeValuePair[] n = new RangeValuePair[] { new RangeValuePair() { RangeName = "hello", TheValue = "there" } };
+            return (n);
+            return(null);
+        } //RangeValuePair
     }
 }
