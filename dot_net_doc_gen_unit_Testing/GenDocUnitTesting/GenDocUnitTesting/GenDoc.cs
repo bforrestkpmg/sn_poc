@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Xml;
 using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -12,7 +13,6 @@ using Excel;
 using System.Data;
 using ClosedXML;
 using ClosedXML.Excel;
-using System.Data;
 
 namespace GenDocUnitTesting
 {
@@ -217,11 +217,22 @@ namespace GenDocUnitTesting
             return (ret);
         }
 
-        public RangeValuePair[] generate_array_of_values(String ip_xml)
+        public List<RangeValuePair>  generate_array_of_values(String ip_xml)
         {
-           RangeValuePair[] n = new RangeValuePair[] { new RangeValuePair() { RangeName = "hello", TheValue = "there" } };
+
+            List<RangeValuePair> n = new List<RangeValuePair>();
+            XmlDocument xmlDoc = new XmlDocument();
+            xmlDoc.LoadXml(ip_xml);
+            string xpath = "/populate/*";
+
+            var nodes = xmlDoc.SelectNodes(xpath);  
+            foreach (XmlNode childrenNode in nodes)
+            {
+                op_text(childrenNode.SelectSingleNode(".//range_name").InnerText);
+                op_text(childrenNode.SelectSingleNode(".//value").InnerText);
+                 n.Add(new RangeValuePair() { RangeName = childrenNode.SelectSingleNode(".//range_name").InnerText, TheValue = childrenNode.SelectSingleNode(".//value").InnerText });
+            }
             return (n);
-            return(null);
         } //RangeValuePair
     }
 }

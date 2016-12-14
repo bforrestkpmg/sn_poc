@@ -206,14 +206,15 @@ namespace GenDocUnitTesting
         [TestMethod]
         public void ParseSimpleXMLOK()
         {
-            String ip_xml = @"<populate><item><range_name>cell1rangename</range_name><value>newvalue1</value><item></populate>";
-            RangeValuePair[] n = new RangeValuePair[] { new RangeValuePair() { RangeName = "hello", TheValue = "there" } };
+            String ip_xml = @"<populate><item><range_name>cell1rangename</range_name><value>newvalue1</value></item></populate>";
+            List<RangeValuePair> n = new List<RangeValuePair>();
+            n.Add(new RangeValuePair() { RangeName = "cell1rangename", TheValue = "newvalue1" });
             GenDocUnitTesting.GenDoc g = new GenDocUnitTesting.GenDoc();
-           GenDocUnitTesting.RangeValuePair[] PopulationValues = g.generate_array_of_values(ip_xml);
+            var PopulationValues = g.generate_array_of_values(ip_xml);
             //            Boolean res = g.PopulateXLSXBasedOnMultipleRanges(testfile, new_file, "cell1rangename", "newvalue1");
             Assert.IsNotNull(PopulationValues);
             Assert.AreEqual(PopulationValues[0], n[0], "arays not the same  - content");
-            Assert.AreEqual(PopulationValues.Length, n.Length, "arays not the same - count");
+            Assert.AreEqual(PopulationValues.Count, n.Count, "arays not the same - count");
         }
         [TestMethod]
         public void ParseSimpleXMLErrorMalFormedXML()
