@@ -227,13 +227,31 @@ namespace GenDocUnitTesting
             String new_file = @TestConstants.base_test_file_dir + @"\testgenerated_file_Basic_Excel_2cells_bothpopulated.xlsx";
             String new_file_csv = @TestConstants.base_test_file_dir + @"\testgenerated_file_Basic_Excel_2cells_bothpopulated.csv";
             GenDocUnitTesting.GenDoc g = new GenDocUnitTesting.GenDoc();
-            //public Boolean UpdateXLSXRange(String filename, String newname, List<RangeValuePair> ranges_xml)
             Boolean res = g.UpdateXLSXRange(testfile, new_file, range_data);
             Assert.IsTrue(res, "update xlsx range is false");
-            //Boolean res = g.UpdateXLSXRange(testfile, "cell2rangename", "newvalue2");
             res = g.SaveExcelXLSXAsCSV(new_file);
             Assert.IsTrue(res, "count not save csv");
             FileAssert.AreEqual(new_file_csv, ref_opput);
+        }
+
+        [TestMethod]
+        public void TestPopulatePOCLoadSheet()
+        {
+            List<RangeValuePair> range_data = new List<RangeValuePair>();
+            range_data.Add(new RangeValuePair() { RangeName = "ID_Asset_ID1", TheValue = "newvalue1" });
+            range_data.Add(new RangeValuePair() { RangeName = "ID_Asset_ID2", TheValue = "newvalue2" });
+            range_data.Add(new RangeValuePair() { RangeName = "ID_ShortDescription_1", TheValue = "newvalue2" });
+            range_data.Add(new RangeValuePair() { RangeName = "ID_ShortDescription_2", TheValue = "newvalue2" });
+            String testfile = @TestConstants.base_test_file_dir + @"\Asset_Load_Sheet.xlsx";
+            String ref_opput = @TestConstants.base_test_file_dir + @"\ref_simplepop_Asset_Load_Sheet.csv";
+            String new_file = @TestConstants.base_test_file_dir + @"\testgenerated_Asset_Load_Sheet.xlsx";
+            String new_file_csv = @TestConstants.base_test_file_dir + @"\testgenerated_testgenerated_Asset_Load_Sheet.csv";
+            GenDocUnitTesting.GenDoc g = new GenDocUnitTesting.GenDoc();
+            // POC template is sheet 5
+            Boolean res = g.UpdateXLSXRange(testfile, new_file, range_data, 5);
+            //res = g.SaveExcelXLSXAsCSV(new_file, 5);
+            //Assert.IsTrue(res, "not save csv");
+            //FileAssert.AreEqual(new_file_csv, ref_opput);
         }
 
         [TestMethod]
