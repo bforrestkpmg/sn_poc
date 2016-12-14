@@ -108,7 +108,7 @@
 function preparse(s) {
 // replace cahracters that we know  are not material
 	var t="";
-    t=s.replace(/\[\-\]/g, '');
+    t=s.replace(/[\[\]]/g, '');
 	return t;
 }
 
