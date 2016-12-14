@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Excel;
 using System.Data;
 using ClosedXML;
@@ -15,6 +16,8 @@ using System.Data;
 
 namespace GenDocUnitTesting
 {
+
+
     class GenDoc
     {
 
@@ -143,14 +146,26 @@ namespace GenDocUnitTesting
             return (true);
         }
 
-        public Boolean UpdateRange(String filename, String range_name, String value)
+        //nOTWORKING
+        public Boolean UpdateXLSRange(String filename, String range_name, String value)
         {
             using (XLWorkbook workBook = new XLWorkbook(@filename))
             {
-                IXLWorksheet workSheet = workBook.Worksheet(1);
-                ws.cell("E5").Value = "New VAlue"
-                workBook.Save();
+                var ws = workBook.Worksheet(1);
+               ws.Cell("E5").Value = "New VAlue";
+                workBook.SaveAs(@filename +".new.xls");
             }   //using
+            return (true);
+        }
+
+
+
+        public Boolean UpdateXLSXRange(String filename, String newname, String range_name, String value)
+        {
+            var workbook = new XLWorkbook(@filename);
+            var worksheet = workbook.Worksheets.Worksheet(1);
+            worksheet.Cell(range_name).SetValue(value);
+            workbook.SaveAs(@newname);
             return (true);
         }
 

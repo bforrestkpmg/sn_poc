@@ -50,6 +50,15 @@ namespace Test.Helpers
 
 namespace GenDocUnitTesting
 {
+    class OP
+    {
+        public void op_text(String s)
+        {
+            System.Diagnostics.Debug.WriteLine(s);
+            Console.WriteLine(s);
+        }
+    }
+
     public static class TestConstants
     {
     public const String base_test_file_dir = @"S:\test\fixtures\files";
@@ -164,19 +173,26 @@ namespace GenDocUnitTesting
             Assert.Inconclusive();
         }
     }
+    [TestClass]
     public class GenDocUnitTestingPopulateNamedCell
     {
-        [TestMethod]
+
         // arg = filename, xml file
         // xml file is our populate format
         // populate excel file
         // test by opening file, saving as csv and comparing result
-        public void PopulateNamedCells()
+        [TestMethod]
+        public void TestPopulateNamedCells()
         {
             String testfile = @TestConstants.base_test_file_dir + @"\Basic_Excel_2cells.xlsx";
-            String op_testfile = @TestConstants.base_test_file_dir + @"\op_Basic_Excel_2cells.xlsx";
+            String ref_opput= @TestConstants.base_test_file_dir + @"\reference_Basic_Excel_2cells.csv";
+            String new_file = @TestConstants.base_test_file_dir + @"\testgenerated_file_Basic_Excel_2cells.xlsx";
+            String new_file_csv = @TestConstants.base_test_file_dir + @"\testgenerated_file_Basic_Excel_2cells.csv";
             GenDocUnitTesting.GenDoc g = new GenDocUnitTesting.GenDoc();
-            Boolean res = g.UpdateRange(testfile, "blah", "value");
+             Boolean res = g.UpdateXLSXRange(testfile, new_file, "cell1rangename", "newvalue1");
+            //Boolean res = g.UpdateXLSXRange(testfile, "cell2rangename", "newvalue2");
+            res = g.SaveExcelXLSXAsCSV(new_file);
+            FileAssert.AreEqual(new_file_csv, ref_opput);
         }
         [TestMethod]
         public void PopulateNamedCellsErrorNoCellNAme()
