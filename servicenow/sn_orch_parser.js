@@ -10,10 +10,11 @@
   exports.OrchParser= OrchParser;
 
   OrchParser.prototype = {
-    preparse_for_fuzzy: function(target) {
-      if (!target)
-        throw new Error("missing target");
-      return this.name + " greets " + target;
+    preparse_for_fuzzy: function(s) {
+        var t="";
+        t=s.replace(/[\[\]-]/g, '');
+        return t;
     }
   };
 })(this);
+

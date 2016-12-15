@@ -32,17 +32,17 @@ var expect = chai.expect;
 
 describe("OrchParser", function() {
   describe("constructor", function() {
-    it("defaults are ", function() {
-      var op = new OrchParser();
-      expect(op.asset_id).to.equal(null);
+    it("defaults and sets asset id", function() {
+      var op = new OrchParser("blah");
+      expect(op.asset_id).to.equal("blah");
       expect(op.closest_asset_id).to.equal(null);
       expect(op.distance).to.equal(null);
     });
 
-    // it("should set cow's name if provided", function() {
-    //   var cow = new Cow("Kate");
-    //   expect(cow.name).to.equal("Kate");
-    // });
+    it("should preparse asset ids by stripping out characters", function() {
+      var op = new OrchParser("blah");
+      expect(op.preparse_for_fuzzy("hellow-][there")).to.equal("hellowthere");
+    });
   });
 
   // describe("#greets", function() {
