@@ -29,6 +29,30 @@ var expect = chai.expect;
 //     });
 //   });
 // });
+// Warn if overriding existing method
+function compare_arrays(arr1,array) {
+    // if the other array is a falsy value, return
+    if (!array)
+        return false;
+
+    // compare lengths - can save a lot of time 
+    if (arr1.length != array.length)
+        return false;
+
+    for (var i = 0, l=arr1.length; i < l; i++) {
+        // Check if we have nested arrays
+        if (arr1[i] instanceof Array && array[i] instanceof Array) {
+            // recurse into the nested arrays
+            if (!compare_arrays(arr1[i],array[i])) 
+                return false;       
+        }           
+        else if (arr1[i] != array[i]) { 
+            // Warning - two different object instances will never be equal: {x:20} != {x:20}
+            return false;   
+        }           
+    }       
+    return true;
+}
 
 describe("OrchParser", function() {
   describe("constructor", function() {
@@ -44,7 +68,11 @@ describe("OrchParser", function() {
       expect(OrchParser.preparse_asset_id("hellow-][there")).to.equal("hellowthere");
     });
     it("should create array of preparsed content", function() {
-      expect(OrchParser.preparse_array_of_strings("x", "")).to.equal("");
+      var input_str = "1. hello there how\n2are you\n3.i am fine";
+      var expected_arr = [["1.","hello there how"],["","2are you"],["3.","i am fine"]];
+      var res=OrchParser.preparse_array_of_strings("[0-9]", input_str);
+      var compare_res=compare_arrays(res, expected_arr);
+      expect(compare_res).to.equal(true);
     });
   });
 

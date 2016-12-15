@@ -179,18 +179,6 @@ function iterate_over_detailed_bom(s, id)
 	return arr;
 }
 
-function AssertIt(test, v1,v2)
-{
-  if (v1===v2)
-  {
-     debug("test: " + test + ": " + true); 	
-  }
-  else
-  {
-     debug("test: " + test + ": " + true); 	
-  }
-}
-
 
 // MAIN Start
 var sow_bill_of_materials;
