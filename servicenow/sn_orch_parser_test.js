@@ -33,15 +33,18 @@ var expect = chai.expect;
 describe("OrchParser", function() {
   describe("constructor", function() {
     it("defaults and sets asset id", function() {
-      var op = new OrchParser("blah");
-      expect(op.asset_id).to.equal("blah");
-      expect(op.closest_asset_id).to.equal(null);
-      expect(op.distance).to.equal(null);
+      OrchParser.setup("assetid");
+      expect(asset_id).to.equal("assetid");
+      expect(closest_asset_id).to.equal(null);
+      expect(distance).to.equal(null);
+      expect(pre_parsed_content).to.equal(null);
     });
 
     it("should preparse asset ids by stripping out characters", function() {
-      var op = new OrchParser("blah");
-      expect(op.preparse_for_fuzzy("hellow-][there")).to.equal("hellowthere");
+      expect(OrchParser.preparse_asset_id("hellow-][there")).to.equal("hellowthere");
+    });
+    it("should create array of preparsed content", function() {
+      expect(OrchParser.preparse_array_of_strings("x", "")).to.equal("");
     });
   });
 
