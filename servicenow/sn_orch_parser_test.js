@@ -74,6 +74,20 @@ describe("OrchParser", function() {
       var compare_res=compare_arrays(res, expected_arr);
       expect(compare_res).to.equal(true);
     });
+    it("should handle empty strings", function() {
+      var input_str = "1. hello there how\n\n";
+      var expected_arr = [["1."," hello there how"],["",""],["",""]];
+      var res=OrchParser.preparse_array_of_strings("[0-9]\\.", input_str);
+      var compare_res=compare_arrays(res, expected_arr);
+      expect(compare_res).to.equal(true);
+    });
+    it("should handle not finding anything", function() {
+      var input_str = "hello there how\nare you\ni am fine";
+      var expected_arr = [["","hello there how"],["","are you"],["","i am fine"]];
+      var res=OrchParser.preparse_array_of_strings("[0-9]\\.", input_str);
+      var compare_res=compare_arrays(res, expected_arr);
+      expect(compare_res).to.equal(true);
+    });
   });
 
   // describe("#greets", function() {
