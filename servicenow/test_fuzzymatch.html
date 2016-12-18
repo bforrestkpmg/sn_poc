@@ -1,69 +1,19 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html>
-  <head>
-
-    <script type="text/javascript" src="./sn_levenshtein_testing.js"></script>
-
-    <script type="text/javascript">
-        document.write('<TITLE>Test harness for sn_levenshtein_testing.js</TITLE>');
-    document.write('<scr'+'ipt type="text/javascript" src="sn_levenshtein_testing.js"></scr'+'ipt>');
-      // Counters for unit test results.
-      var test_good = 0;
-      var test_bad = 0;
-
-      // If expected and actual are the identical, print 'Ok', otherwise 'Fail!'
-      function assertEquals(msg, expected, actual) {
-        if (typeof actual == 'undefined') {
-          // msg is optional.
-          actual = expected;
-          expected = msg;
-          msg = 'Expected: \'' + expected + '\' Actual: \'' + actual + '\'';
-        }
-        if (expected === actual) {
-          document.write('<FONT COLOR="#009900">Ok</FONT><BR>');
-          test_good++;
-        } else {
-          document.write('<FONT COLOR="#990000"><BIG>Fail!</BIG></FONT><BR>');
-          msg = msg.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-          document.write('<code>' + msg + '</code><BR>');
-          test_bad++;
-        }
-      }
-      function runTests() {
-        var tests = ['testBasicLevin1'];
-        for (var x = 0; x < tests.length; x++) {
-          document.write('<H3>' + tests[x] + ':</H3>');
-          eval(tests[x] + '()');
-        }
-      }
-
-
-    </script>
-  </head>
-  <body>
-
-    <P>If debugging errors, start with the first reported error,
-    subsequent tests often rely on earlier ones.</P>
-
-    <script type="text/javascript">
-      var distance = Levenshtein.get('Firewall – Infrastructure – New – Complex ', 'Security – Infrastructure –Firewall – New – Complex');   // 2
-      document.write('<P>distance: ' + distance+ '<BR></P>');
-      </script>
-
-      <P>If debugging errors, start with the first reported error,
-    subsequent tests often rely on earlier ones.</P>
-
-    <script type="text/javascript">
-      var startTime = (new Date()).getTime();
-      runTests();
-      var endTime = (new Date()).getTime();
-      document.write('<H3>Done.</H3>');
-      document.write('<P>Tests passed: ' + test_good + '<BR>Tests failed: ' + test_bad + '</P>');
-      document.write('<P>Total time: ' + (endTime - startTime) + ' ms</P>');
-    </script>
-
-
-
-    </script>
-  </body>
+<head>
+  <meta charset="utf-8">
+  <title>Orch Parser tests</title>
+  <link rel="stylesheet" media="all" href="node_modules/mocha/mocha.css"">
+</head>
+<body>
+  <div id="mocha"><p><a href=".">Index</a></p></div>
+  <div id="messages"></div>
+  <div id="fixtures"></div>
+  <script src="node_modules/mocha/mocha.js"></script>
+  <script src="node_modules/chai/chai.js"></script>
+  <script src="sn_orch_parser.js"></script>
+  <script>mocha.setup('bdd')</script>
+  <script src="sn_orch_parser_test.js"></script>
+  <script>mocha.run();</script>
+</body>
 </html>

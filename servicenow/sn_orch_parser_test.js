@@ -69,8 +69,8 @@ describe("OrchParser", function() {
     });
     it("should create array of preparsed content", function() {
       var input_str = "1. hello there how\n2are you\n3.i am fine";
-      var expected_arr = [["1.","hello there how"],["","2are you"],["3.","i am fine"]];
-      var res=OrchParser.preparse_array_of_strings("[0-9]", input_str);
+      var expected_arr = [["1."," hello there how"],["","2are you"],["3.","i am fine"]];
+      var res=OrchParser.preparse_array_of_strings("[0-9]\\.", input_str);
       var compare_res=compare_arrays(res, expected_arr);
       expect(compare_res).to.equal(true);
     });

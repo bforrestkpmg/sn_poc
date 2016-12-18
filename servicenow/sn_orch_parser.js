@@ -31,7 +31,8 @@ var OrchParser = {
     for(var i = 0;i < lines.length;i++){
           theline=lines[i];
       respdata_array=[];
-      reg='(.*' + regExpEscape(regex) + ')(.*)';
+      reg='(' + regex + ')(.*)';
+      //reg=regex;
       matches=theline.match(reg);
      if (matches !== null) {
       respdata_array[0] = matches[1];
