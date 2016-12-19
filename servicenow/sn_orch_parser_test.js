@@ -120,21 +120,22 @@ describe("OrchParser", function() {
 				describe("get components for asset ids", function(){
 					it("finds components in brackets below the current top line item for a specific id", function() {
 			var ip_str = "textbefore(WX-C9999-E)	2	$1,837.33	$	3,674.66	$  176,383.68\nwsc4999 first line compnoent	2	$ 324.44	$ 648.88	$  31,146.24\nwsc4999 2nd line	2	$324.44	$648.88	$31,146.24\nnew item(ASA6666)	2	$-	$-	$ -\n new item 4d line(WS-c4999-F)	2	$1,837.33	$3,674.66	$  176,383.68\nwsc49999f 2ndline	2	$324.44	$648.88	$31,146.24\nnothing to see here	9	$ 470.97 	$   1,883.88	$  90,426.24\n" 
-				var res=OrchParser.find_item_details_for_sow_id("WX-C9999-E", ip_str);
+				var res=OrchParser.find_item_details_for_sow_id("WX-C9999-E", ip_str, true);
 				var expected=["WX-C9999-E", ", wsc4999 first line compnoent, wsc4999 2nd line"];
 				var compare_res=compare_arrays(res, expected);
 				expect(compare_res).to.equal(true);
 			});
 			});
-			describe("get all assets and all components", function(){
-					it("for a list of ids, get the components for each", function() {
-			var sow_quote_costs = "Pricing Table Notes: \n \n 1.	A Contract Variation will be executed between the parties to add the incremental charge to the existing ‘TWS Service 3 – Data Centre to Data Centre’ Resource Unit\n 2.	This solution will be delivered under the T&Cs of the existing DNV agreement between Qantas and Telstra. A contract variation will be required to add some new Resource Units (price points), otherwise the service model will be as per the existing agreement\n \n 22\n \n Once Off Charges\n \n \n Consultancy Services ~ GST Excl	Units	Unit Price	Extended Price\n \n \n Proramme Support / Imlementation Da - 8 hours\n 5	1135.68	$5,678.40\n \n Ongoing Resource Unit Charges\n Additional Resource Units -GST Excl	Quanity	RU Price(per month)	Unit Extended Price	Total Contract Value\n Firewall-Infrastructure-New-Complex (WX-C9999-X)	2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support line 1\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline2\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2\t$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY\t2\t$     324.44	$   648.88	$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)	$    470.97 $   1,883.88	$  90,426.24\n"; 
-				var res=OrchParser.get_sow_asset_ids_description_from_bom(["WX-C9999-X", "WS-c4999-F"], sow_quote_costs);
-				var expected=[["WX-C9999-X", ",  Firewall-Support line 1, Firewall-Support xline2"], ["WS-c4999-F", ",  Firewall-Support YYYY"]];
-				var compare_res=compare_arrays(res, expected);
-				expect(compare_res).to.equal(true);
-			});
-			});
+			// describe("get all assets and all components", function(){
+			// 		it("for a list of ids, get the components for each", function() {
+			// var sow_quote_costs = "Pricing Table Notes: \n \n 1.	A Contract Variation will be executed between the parties to add the incremental charge to the existing ‘TWS Service 3 – Data Centre to Data Centre’ Resource Unit\n 2.	This solution will be delivered under the T&Cs of the existing DNV agreement between Qantas and Telstra. A contract variation will be required to add some new Resource Units (price points), otherwise the service model will be as per the existing agreement\n \n 22\n \n Once Off Charges\n \n \n Consultancy Services ~ GST Excl	Units	Unit Price	Extended Price\n \n \n Proramme Support / Imlementation Da - 8 hours\n 5	1135.68	$5,678.40\n \n Ongoing Resource Unit Charges\n Additional Resource Units -GST Excl	Quanity	RU Price(per month)	Unit Extended Price	Total Contract Value\n Firewall-Infrastructure-New-Complex (WX-C9999-X)	2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support line 1\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline2\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2\t$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY\t2\t$     324.44	$   648.88	$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)	$    470.97 $   1,883.88	$  90,426.24\n"; 
+			// 	var res=OrchParser.get_sow_asset_ids_description_from_bom(["WX-C9999-X", "WS-c4999-F"], sow_quote_costs);
+			// 	console.log(res);
+			// 	var expected=[["WX-C9999-X", ",  Firewall-Support line 1, Firewall-Support xline2"], ["WS-c4999-F", ",  Firewall-Support YYYY"]];
+			// 	var compare_res=compare_arrays(res, expected);
+			// 	expect(compare_res).to.equal(true);
+			// });
+			// });
 		describe("fuzzy match asset ids", function(){
 				// it("builds a table of likely matches", function() {
 				// 	var input_str = "";

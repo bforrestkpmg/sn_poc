@@ -134,6 +134,8 @@ find_item_details_for_sow_id: function(id, description_text, skip_fuzzy) {
    var component_info = "";
    var in_block;
    var parsed_id;
+   closest_distance=99999;
+   closest_asset_id=null;
 
    var lines = description_text.split('\n');
    in_block=false;
@@ -145,27 +147,20 @@ find_item_details_for_sow_id: function(id, description_text, skip_fuzzy) {
     {
        /// we use this only if 
        fuzzy_matches=theline.match(/\(([A-Z][A-Za-z0-9\-]*)\)/)
-       console.log("fuzzy_matches");
-       console.log(fuzzy_matches);
 
        // do we have things in brackets e.g. potential matches
+       if (fuzzy_matches === null) { continue; }
 
        parsed_id=this.preparse_asset_id(id);
-       to_fuzzy_match=this.preparse_asset_id(matches[1]);
-        distance_measure=Levenshtein.get(parsed_id, to_fuzzy_match);
-       console.log("to_fuzzy_match");
-       console.log(to_fuzzy_match);
-       console.log("distance_measure");
-       console.log(distance_measure);
+       to_fuzzy_match=this.preparse_asset_id(fuzzy_matches[1]);
+        distance_measure=this.get_levi(parsed_id, to_fuzzy_match);
+
 
         if (distance_measure < closest_distance)
         {
           closest_distance=distance_measure;
           closest_asset_id=to_fuzzy_match;
         }
-
-       console.log("closest_distance");
-       console.log(closest_distance);
     }
 
 
@@ -199,16 +194,21 @@ find_item_details_for_sow_id: function(id, description_text, skip_fuzzy) {
       }
    } // for
   all_content_for_asset_id[1]=component_info;
+  console.log(all_content_for_asset_id);
   return all_content_for_asset_id
 }, // find_item_details_for_sow_id
 
-wrapper_find_item_details_for_sow_id: function(id, description_text, skip_fuzzy) {
+wrapper_find_item_details_for_sow_id: function(id, description_text) {
   var ret=this.find_item_details_for_sow_id(id, description_text,false);
   // if we don't get anything we go again but using  the closest fuzzy match term
-  // if ((ret === []) && (closest_asset_id !== null))
-  // {
-  //     ret=this.find_item_details_for_sow_id(closest_asset_id, description_text,true);
-  // }
+  console.log("closest_asset_id");
+  console.log(closest_asset_id);
+  if (closest_asset_id === null)
+  {
+    console.log("going again");
+      ret=this.find_item_details_for_sow_id(closest_asset_id, description_text,true);
+    console.log(ret);
+  }
   return ret;
 },
 
@@ -239,7 +239,8 @@ get_sow_asset_ids_description_from_bom: function (list_of_sows, sow_quote_costs)
   var id_description_pair;
   for (i = 0; i < list_of_sows.length; i++) { 
      si=list_of_sows[i];
-     id_description_pair=this.find_item_details_for_sow_id(si, sow_quote_costs);
+     id_description_pair=this.wrapper_find_item_details_for_sow_id(si, sow_quote_costs);
+     console.log(id_description_pair);
      if (id_description_pair=== null) continue;
      // add recorded entry to our list
      ret_array.push(id_description_pair);
