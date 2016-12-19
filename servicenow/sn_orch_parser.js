@@ -1,8 +1,9 @@
 // TODO put this into OrchParser
 // WARNING these are used within the object but cannot work out syntax to include in OrchParser
-var closest_asset_id = null;
-var distance = null;
-var pre_parsed_content = null; // 2D array, each elment = [fuzzy matched asset id, "content"]
+  var closest_asset_id = null; // this is the id in () that has been extracted
+  var closest_distance = 99999; // levenstein distance for each id we try and match
+  var distance_measure;
+  var to_fuzzy_match="";
 
 
  function regExpEscape(literal_string) {
@@ -124,17 +125,50 @@ return levi.get(x,y,z);
    return res_array;
 },
 
-find_item_details_for_sow_id: function(id, description_text) {
+find_item_details_for_sow_id: function(id, description_text, skip_fuzzy) {
+  if(typeof(skip_fuzzy)==='undefined') skip_fuzzy = false;
+// find_item_details_for_sow_id: function(id, description_text) {
   var matches;
    // array [0] = asset id [1] = is all coponents that are part of that asset in single line comma separated
    var all_content_for_asset_id = [];
    var component_info = "";
    var in_block;
+   var parsed_id;
 
    var lines = description_text.split('\n');
    in_block=false;
   for(var i = 0;i < lines.length;i++){
     theline=lines[i];
+
+
+    if (!skip_fuzzy)
+    {
+       /// we use this only if 
+       fuzzy_matches=theline.match(/\(([A-Z][A-Za-z0-9\-]*)\)/)
+       console.log("fuzzy_matches");
+       console.log(fuzzy_matches);
+
+       // do we have things in brackets e.g. potential matches
+
+       parsed_id=this.preparse_asset_id(id);
+       to_fuzzy_match=this.preparse_asset_id(matches[1]);
+        distance_measure=Levenshtein.get(parsed_id, to_fuzzy_match);
+       console.log("to_fuzzy_match");
+       console.log(to_fuzzy_match);
+       console.log("distance_measure");
+       console.log(distance_measure);
+
+        if (distance_measure < closest_distance)
+        {
+          closest_distance=distance_measure;
+          closest_asset_id=to_fuzzy_match;
+        }
+
+       console.log("closest_distance");
+       console.log(closest_distance);
+    }
+
+
     // have we found the top level item e.g.  description blah (asset id) qty price etc....
     reg='(.*)\(' + regExpEscape(id) + '\).*';
 
@@ -167,6 +201,16 @@ find_item_details_for_sow_id: function(id, description_text) {
   all_content_for_asset_id[1]=component_info;
   return all_content_for_asset_id
 }, // find_item_details_for_sow_id
+
+wrapper_find_item_details_for_sow_id: function(id, description_text, skip_fuzzy) {
+  var ret=this.find_item_details_for_sow_id(id, description_text,false);
+  // if we don't get anything we go again but using  the closest fuzzy match term
+  // if ((ret === []) && (closest_asset_id !== null))
+  // {
+  //     ret=this.find_item_details_for_sow_id(closest_asset_id, description_text,true);
+  // }
+  return ret;
+},
 
 find_sow_ids_in_quote_costs: function (bom_str) {
   var matches;
