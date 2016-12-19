@@ -91,8 +91,32 @@ find_item_details_for_sow_id: function(id, description_text) {
          }
       }
    } // for
-            all_content_for_asset_id[1]=component_info;
+  all_content_for_asset_id[1]=component_info;
+ console.log("find item result");
+ console.log(all_content_for_asset_id);
   return all_content_for_asset_id
-} // find_item_details_for_sow_id
+}, // find_item_details_for_sow_id
+
+find_sow_ids_in_quote_costs: function (bom_str) {
+       console.log(bom_str);
+  var matches;
+  var allmatches = [];
+  // matches=bom_str.match(/([1-9][0-9]*\.0\t([A-Z][A-Za-z0-9\-]*)\t)+/);
+       // console.log(matches);
+  var lines = bom_str.split('\n');
+    for(var i = 0;i < lines.length;i++){
+       // console.log("line counter: " + i.toString());
+        matches=lines[i].match(/[1-9][0-9]*\.0\t([A-Z][A-Za-z0-9\-]*)\t(.+)/);
+        if (matches === null) { continue; }
+     // console.log("find_sow_ids_in_quote_costs matches: " + matches[1].toString());
+        //code here using lines[i] which will give you each line
+       allmatches.push(matches[1]);
+    }
+  // debug(allmatches.length.toString());
+  // debug("all matches:");
+  // debug(allmatches.toString());
+  return allmatches;
+}
+
 
 }; //OrchParser
