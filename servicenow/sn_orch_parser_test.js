@@ -53,6 +53,20 @@ function compare_arrays(arr1,array) {
 		}       
 		return true;
 }
+describe("levenshtein", function() {
+	describe("get", function() {
+		// these are extracted from fast-levenshtein tests for now
+		it("matches distance", function() {
+			res=OrchParser.get_levi("a", "a");
+			expect(res).to.equal(0);
+			res=OrchParser.get_levi("xabxcdxxefxgx", "1ab2cd34ef5g6")
+			expect(res).to.equal(6);
+			res=OrchParser.get_levi("distance", "difference")
+			expect(res).to.equal(5);
+
+					});
+					});
+					});
 
 describe("OrchParser", function() {
 	describe("constructor", function() {
