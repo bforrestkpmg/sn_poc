@@ -1,21 +1,15 @@
-var asset_id = null;
+// TODO put this into OrchParser
+// WARNING these are used within the object but cannot work out syntax to include in OrchParser
 var closest_asset_id = null;
 var distance = null;
 var pre_parsed_content = null; // 2D array, each elment = [fuzzy matched asset id, "content"]
-
-
 
 
  function regExpEscape(literal_string) {
     return literal_string.replace(/[-[\]{}()*+!<=:?.\/\\^$|#\s,]/g, '\\$&');
 };
 var OrchParser = {
-
- setup: function(the_asset_id) {
-    asset_id = the_asset_id;
-    closest_asset_id = null;
-    distance = null;
-    pre_parsed_content = null; // 2D array, each elment = [fuzzy matched asset id, "content"]
+ setup: function() {
 },
 
 get_levi: function(x,y,z)
@@ -30,22 +24,12 @@ levi=(function() {
     console.log("Collator could not be initialized and wouldn't be used");
   }
   // arrays to re-use
-  var prevRow = [],
-    str2Char = [];
+  var prevRow = [], str2Char = [];
   
   /**
    * Based on the algorithm at http://en.wikipedia.org/wiki/Levenshtein_distance.
    */
   var Levenshtein = {
-    /**
-     * Calculate levenshtein distance of the two strings.
-     *
-     * @param str1 String the first string.
-     * @param str2 String the second string.
-     * @param [options] Additional options.
-     * @param [options.useCollator] Use `Intl.Collator` for locale-sensitive string comparison.
-     * @return Integer the levenshtein distance (0 and above).
-     */
     get: function(str1, str2, options) {
       var useCollator = (options && collator && options.useCollator);
       
@@ -102,25 +86,6 @@ levi=(function() {
 
   };
   return Levenshtein;
-
-  // // amd
-  // if (typeof define !== "undefined" && define !== null && define.amd) {
-  //   define(function() {
-  //     return Levenshtein;
-  //   });
-  // }
-  // // commonjs
-  // else if (typeof module !== "undefined" && module !== null && typeof exports !== "undefined" && module.exports === exports) {
-  //   module.exports = Levenshtein;
-  // }
-  // // web worker
-  // else if (typeof self !== "undefined" && typeof self.postMessage === 'function' && typeof self.importScripts === 'function') {
-  //   self.Levenshtein = Levenshtein;
-  // }
-  // // browser main thread
-  // else if (typeof window !== "undefined" && window !== null) {
-  //   window.Levenshtein = Levenshtein;
-  // }
 }());
 
 return levi.get(x,y,z);
@@ -161,9 +126,6 @@ return levi.get(x,y,z);
 
 find_item_details_for_sow_id: function(id, description_text) {
   var matches;
-  var desc_minus_numbers;
-  var regExp_headers;
-   var matches_of_description;
    // array [0] = asset id [1] = is all coponents that are part of that asset in single line comma separated
    var all_content_for_asset_id = [];
    var component_info = "";
@@ -241,7 +203,4 @@ get_sow_asset_ids_description_from_bom: function (list_of_sows, sow_quote_costs)
   return ret_array;
 } //get_sow_asset_ids_description_from_bom
 
-
-
-
-}; //OrchParser
+}; //OrchParser Class
