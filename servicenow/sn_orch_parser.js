@@ -98,9 +98,43 @@ return levi.get(x,y,z);
         return t;
 },
 
+// generates 
+// arr[ [x,y,z], [x,y,z] ]
+// where
+// x = regex extracted item
+// y = levenshein distance to id
+// z = extracted information 
+// e.g. we are effecgively 'exitending' the prepare array
+
+calc_fuzzy_match_to_regex_list: function(id,preparse_array)
+{
+    var res_array=[];
+    var items_array=[];
+    var current_preparse_item=[];
+    var distance_levenstein_between_id_and_regex_extracted=null;
+    // console.log(preparse_array);
+    for(var i = 0;i < preparse_array.length;i++){
+      items_array=[];
+     // console.log("looking at prepare array input: " + preparse_array[i]);
+      current_preparse_item=preparse_array[i];
+      items_array[0]=current_preparse_item[0];
+      items_array[2]=current_preparse_item[1];
+
+      distance_levenstein_between_id_and_regex_extracted=this.get_levi(id, items_array[0]);
+      // console.log("distance: " + distance_levenstein_between_id_and_regex_extracted);
+      items_array[1]=distance_levenstein_between_id_and_regex_extracted;
+     res_array.push(items_array);
+      console.log("items: " + items_array);
+
+    }
+      console.log(res_array);
+
+    return res_array;
+},
+
+    // 2D array, each elment = [exracted asset id, "content"
  preparse_array_of_strings: function(regex, inputstrings) {
     var lines = inputstrings.split('\n');
-    // 2D array, each elment = [fuzzy matched asset id, "content"
     var res_array=[];
     // we build up based on regex matches 
     var respdata_array=[];
@@ -194,20 +228,19 @@ find_item_details_for_sow_id: function(id, description_text, skip_fuzzy) {
       }
    } // for
   all_content_for_asset_id[1]=component_info;
-  console.log(all_content_for_asset_id);
   return all_content_for_asset_id
 }, // find_item_details_for_sow_id
 
 wrapper_find_item_details_for_sow_id: function(id, description_text) {
   var ret=this.find_item_details_for_sow_id(id, description_text,false);
   // if we don't get anything we go again but using  the closest fuzzy match term
-  console.log("closest_asset_id");
-  console.log(closest_asset_id);
+  // console.log("closest_asset_id");
+  // console.log(closest_asset_id);
   if (closest_asset_id === null)
   {
-    console.log("going again");
+    // console.log("going again");
       ret=this.find_item_details_for_sow_id(closest_asset_id, description_text,true);
-    console.log(ret);
+    // console.log(ret);
   }
   return ret;
 },
@@ -240,7 +273,7 @@ get_sow_asset_ids_description_from_bom: function (list_of_sows, sow_quote_costs)
   for (i = 0; i < list_of_sows.length; i++) { 
      si=list_of_sows[i];
      id_description_pair=this.wrapper_find_item_details_for_sow_id(si, sow_quote_costs);
-     console.log(id_description_pair);
+     // console.log(id_description_pair);
      if (id_description_pair=== null) continue;
      // add recorded entry to our list
      ret_array.push(id_description_pair);
