@@ -105,6 +105,7 @@ return levi.get(x,y,z);
 // y = levenshein distance to id
 // z = extracted information 
 // e.g. we are effecgively 'exitending' the prepare array
+// returns the integer of the closest match
 
 calc_fuzzy_match_to_regex_list: function(id,preparse_array)
 {
@@ -124,13 +125,27 @@ calc_fuzzy_match_to_regex_list: function(id,preparse_array)
       // console.log("distance: " + distance_levenstein_between_id_and_regex_extracted);
       items_array[1]=distance_levenstein_between_id_and_regex_extracted;
      res_array.push(items_array);
-      console.log("items: " + items_array);
-
     }
-      console.log(res_array);
 
     return res_array;
 },
+
+get_closest_match_from_fuzzy_match_list: function(fuzzy_list)
+{
+  var closest=99999;
+  var item_idx;
+  for(var i = 0;i < fuzzy_list.length;i++){
+    console.log("looking: " + fuzzy_list[i][1] );
+    if (fuzzy_list[i][1] < closest)
+    {
+       closest=fuzzy_list[i][1];
+       item_idx=i;
+    }
+  }
+  if (closest===99999) { return null };
+  return fuzzy_list[item_idx][0];
+},
+
 
     // 2D array, each elment = [exracted asset id, "content"
  preparse_array_of_strings: function(regex, inputstrings) {

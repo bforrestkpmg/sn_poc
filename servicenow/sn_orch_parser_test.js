@@ -144,12 +144,17 @@ describe("OrchParser", function() {
 				var compare_res=compare_arrays(res, expected_arr);
 				expect(compare_res).to.equal(true);
 				});
-		it("finds next best components based on nearest (based on shortest levenshtein distance that is not zero)", function() {
-			var ip_str= "Firewall-Infrastructure-New-Complex (Cat4506)	2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support forr cat4506 line 1\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline2\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2\t$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (AA-D-4506)\t2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY\t2\t$     324.44	$   648.88	$  31,146.24\n"; 
-				var res=OrchParser.wrapper_find_item_details_for_sow_id("WS-C4506", ip_str);
-				var expected=["WS-C4506", " Firewall-Support forr cat4506 line 1", "fuzzy:Cat4506"];
-				var compare_res=compare_arrays(res, expected);
-				expect(compare_res).to.equal(true);
+		it("finds next best serach item match based on nearest (based on shortest levenshtein distance that is not zero)", function() {
+			     var ip_array=[["(12x)", 4, " there how"], ["(xxy)", 3, "ok"], ["(xxxxxaa)", 6, "thankyou"]];
+			     var res=OrchParser.get_closest_match_from_fuzzy_match_list(ip_array);
+				expect(res).to.equal("(xxy)");
+			});
+			it	("finds actual match too)", function() {
+					var ip_array=[["(12x)", " there how"], ["(xxx)", "ok"], ["(xxxxxaa)", "thankyou"]];
+					  var res_arr=OrchParser.calc_fuzzy_match_to_regex_list("xxx", ip_array);
+			     var res=OrchParser.get_closest_match_from_fuzzy_match_list(res_arr);
+			     console.log(res);
+				expect(res).to.equal("(xxx)");
 			});
 			});
 
