@@ -92,31 +92,45 @@ find_item_details_for_sow_id: function(id, description_text) {
       }
    } // for
   all_content_for_asset_id[1]=component_info;
- // console.log("find item result");
- // console.log(all_content_for_asset_id);
   return all_content_for_asset_id
 }, // find_item_details_for_sow_id
 
 find_sow_ids_in_quote_costs: function (bom_str) {
-       console.log(bom_str);
   var matches;
   var allmatches = [];
-  // matches=bom_str.match(/([1-9][0-9]*\.0\t([A-Z][A-Za-z0-9\-]*)\t)+/);
-       // console.log(matches);
   var lines = bom_str.split('\n');
     for(var i = 0;i < lines.length;i++){
        // console.log("line counter: " + i.toString());
         matches=lines[i].match(/[1-9][0-9]*\.0\t([A-Z][A-Za-z0-9\-]*)\t(.+)/);
         if (matches === null) { continue; }
-     // console.log("find_sow_ids_in_quote_costs matches: " + matches[1].toString());
         //code here using lines[i] which will give you each line
        allmatches.push(matches[1]);
     }
-  // debug(allmatches.length.toString());
-  // debug("all matches:");
-  // debug(allmatches.toString());
   return allmatches;
-}
+},
+
+// for each SOW ID we need to find where it ocurs in the sow_quote_costs
+// now match 1.0, 11.0, 2.0 etc. and text after it until tab
+// e.g. 1.0 AS-JASDF\tblah blahblah
+// assumes
+// new line before 1.0 XXXX 
+// space between 1.0 AND XXXX
+// text up until cell
+// TODO what other characters in the regex header
+get_sow_asset_ids_description_from_bom: function (list_of_sows, sow_quote_costs) {
+  var ret_array=[];
+  var id_description_pair;
+  for (i = 0; i < list_of_sows.length; i++) { 
+     si=list_of_sows[i];
+     id_description_pair=this.find_item_details_for_sow_id(si, sow_quote_costs);
+     if (id_description_pair=== null) continue;
+     // add recorded entry to our list
+     ret_array.push(id_description_pair);
+  }
+  return ret_array;
+} //get_sow_asset_ids_description_from_bom
+
+
 
 
 }; //OrchParser
