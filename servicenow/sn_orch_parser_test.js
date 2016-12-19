@@ -139,6 +139,15 @@ describe("OrchParser", function() {
 				expect(compare_res).to.equal(true);
 			});
 			});
+		describe("fuzzy match asset ids", function(){
+					it("finds next best components based on nearest (based on shortest levenshtein distance that is not zero)", function() {
+			var ip_str= "Firewall-Infrastructure-New-Complex (Cat4506)	2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support forr cat4506 line 1\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline2\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2\t$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (AA-D-4506)\t2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY\t2\t$     324.44	$   648.88	$  31,146.24\n"; 
+				var res=OrchParser.get_sow_asset_ids_description_from_bom(["WS-C4506"], ip_str);
+				var expected=["WS-C4506", " Firewall-Support forr cat4506 line 1", "fuzzy:Cat4506"];
+				var compare_res=compare_arrays(res, expected);
+				expect(compare_res).to.equal(true);
+			});
+			});
 
 
 
