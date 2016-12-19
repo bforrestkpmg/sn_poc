@@ -90,28 +90,25 @@ describe("OrchParser", function() {
 		});
 
 		describe("find_sow_ids_in_quote_costs", function(){
-			it("", function() {
+			it("should extract sow id in brackets into a list", function() {
 				// var ip_str="fodder\nhello\nblah(xxx)	there\nhow\nare\nanother(yyy)blah\nblah2";
 			var ip_str = "1.0	WX-C9999-E	Cat4500 E-Series 6-Slot Chassis fan no ps	2	$7,461.75 \n1.1	WS-X4748-RJ45-E	Catalyst 4500 E-Series 48-Port10/100/1000 Non-Bl;ocking	2	$10,449.44\n2.0	WS-c4999-F	Cat4500 E-Series 6-Slot Chassis fan no ps	2	$7,461.75\n2.1	WS-X4748-RJ45-E Cataqlyst 4500 E-Series 48-Port 10/100/1000 Non-Blcoking	2	$7,461.75"; 
 				var res=OrchParser.find_sow_ids_in_quote_costs(ip_str);
 				var expected=["WX-C9999-E", "WS-c4999-F"];
 				var compare_res=compare_arrays(res, expected);
-				console.log(res);
-				console.log(expected);
 				expect(compare_res).to.equal(true);
 			});
 		}); // find_item_details_for-sowid
-// 				describe("find_item_details_for_sow_id", function(){
-// 					it("", function() {
-// 				// var ip_str="fodder\nhello\nblah(xxx)	there\nhow\nare\nanother(yyy)blah\nblah2";
-// var ip_str = "textbefore(WX-C9999-E)	2	$1,837.33	$	3,674.66	$  176,383.68\nwsc4999 first line compnoent	2	$ 324.44	$ 648.88	$  31,146.24\nwsc4999 2nd line	2	$324.44	$648.88	$31,146.24\nnew item(ASA6666)	2	$-	$-	$ -\n new item 4d line(WS-c4999-F)	2	$1,837.33	$3,674.66	$  176,383.68\nwsc49999f 2ndline	2	$324.44	$648.88	$31,146.24\nnothing to see here	9	$ 470.97 	$   1,883.88	$  90,426.24\n";
-// 				var res=OrchParser.find_item_details_for_sow_id("WS-C4999-E", ip_str);
-// 				console.log(res);
-// 				var expected=["WS-C4999-E", "WX-C9999-E,, wsc4999 first line compnoent, wsc4999 2nd line"];
-// 				var compare_res=compare_arrays(res, expected);
-// 							expect(compare_res).to.equal(true);
-// 			});
-// 			});
+				describe("find_item_details_for_sow_id", function(){
+					it("finds components below the current top line item for a specific id", function() {
+			var ip_str = "textbefore(WX-C9999-E)	2	$1,837.33	$	3,674.66	$  176,383.68\nwsc4999 first line compnoent	2	$ 324.44	$ 648.88	$  31,146.24\nwsc4999 2nd line	2	$324.44	$648.88	$31,146.24\nnew item(ASA6666)	2	$-	$-	$ -\n new item 4d line(WS-c4999-F)	2	$1,837.33	$3,674.66	$  176,383.68\nwsc49999f 2ndline	2	$324.44	$648.88	$31,146.24\nnothing to see here	9	$ 470.97 	$   1,883.88	$  90,426.24\n" 
+				var res=OrchParser.find_item_details_for_sow_id("WX-C9999-E", ip_str);
+				var expected=["WX-C9999-E", ", wsc4999 first line compnoent, wsc4999 2nd line"];
+				var compare_res=compare_arrays(res, expected);
+				expect(compare_res).to.equal(true);
+			});
+			});
+				
 
 
 	});

@@ -92,8 +92,8 @@ find_item_details_for_sow_id: function(id, description_text) {
       }
    } // for
   all_content_for_asset_id[1]=component_info;
- console.log("find item result");
- console.log(all_content_for_asset_id);
+ // console.log("find item result");
+ // console.log(all_content_for_asset_id);
   return all_content_for_asset_id
 }, // find_item_details_for_sow_id
 
