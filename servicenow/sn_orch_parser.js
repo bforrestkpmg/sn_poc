@@ -46,6 +46,53 @@ var OrchParser = {
     res_array.push(respdata_array);
     }
    return res_array;
-}
+},
+
+find_item_details_for_sow_id: function(id, description_text) {
+  var matches;
+  var desc_minus_numbers;
+  var regExp_headers;
+   var matches_of_description;
+   // array [0] = asset id [1] = is all coponents that are part of that asset in single line comma separated
+   var all_content_for_asset_id = [];
+   var component_info = "";
+   var in_block;
+
+   var lines = description_text.split('\n');
+   in_block=false;
+  for(var i = 0;i < lines.length;i++){
+    theline=lines[i];
+    // have we found the top level item e.g.  description blah (asset id) qty price etc....
+    reg='(.*)\(' + regExpEscape(id) + '\).*';
+
+      matches=theline.match(reg);
+
+      // yes so record this asset, now mark the fact we keep going
+       if (matches !== null) {
+        in_block = true;
+        all_content_for_asset_id[0] = id;
+        continue; }
+
+      // get all stuff before price / qty / etc.
+      if (in_block) {
+      reg='([ A-Za-z\t0-9\-]+)\t[0-9]+';
+      // reg='(.*)\t(.*)';
+        matches=theline.match(reg);
+        if (matches !== null) {
+          component_info = component_info + ", " + matches[1];
+          continue;
+        }
+        // test for the next top line i.e. an asset descripton with (xxxxxx) in the line
+         matches=theline.match(/.*\([A-Za-z0-9\-]+\).*/)
+         // we have now found the next top line item so finish this search
+         if (matches !== null) { 
+          in_block=false;
+          break;
+         }
+      }
+   } // for
+            all_content_for_asset_id[1]=component_info;
+  return all_content_for_asset_id
+} // find_item_details_for_sow_id
 
 }; //OrchParser

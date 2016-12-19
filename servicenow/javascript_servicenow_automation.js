@@ -58,7 +58,7 @@ function raise_error(e) {
 
 // look for all occurances of 1.0\sow asset id\t
 // and return the 2nd array element = sow asset id
-function find_sow_ids(bom_str) {
+function find_sow_ids_in_quote_costs(bom_str) {
 	var matches;
 	var allmatches = [];
 	// matches=bom_str.match(/([1-9][0-9]*\.0\t([A-Z][A-Za-z0-9\-]*)\t)+/);
@@ -67,7 +67,7 @@ function find_sow_ids(bom_str) {
 			// debug("line counter: " + i.toString());
 	      matches=lines[i].match(/[1-9][0-9]*\.0\t([A-Z][A-Za-z0-9\-]*)\t+/);
 	      if (matches === null) { continue; }
-			// debug("find_sow_ids matches: " + matches[1].toString());
+			// debug("find_sow_ids_in_quote_costs matches: " + matches[1].toString());
 		    //code here using lines[i] which will give you each line
 		   allmatches.push(matches[1]);
 		}
@@ -141,7 +141,7 @@ function find_item_details_for_sow_id(id, description_text) {
 	return all_content_for_asset_id
 } // find_item_details_for_sow_id
 
-// for each SOW ID we need to find where it ocurs in the detail_bom_info
+// for each SOW ID we need to find where it ocurs in the sow_quote_costs
 // now match 1.0, 11.0, 2.0 etc. and text after it until tab
 // e.g. 1.0 AS-JASDF\tblah blahblah
 // assumes
@@ -149,7 +149,7 @@ function find_item_details_for_sow_id(id, description_text) {
 // space between 1.0 AND XXXX
 // text up until cell
 // TODO what other characters in the regex header
-function lookup_sow_id_description(list_of_sows, detail_info) {
+function get_sow_asset_ids_description_from_bom(list_of_sows, detail_info) {
 	// debug("list of sows: " + list_of_sows.toString());
 	var ret_array=[];
 	var description;
@@ -164,7 +164,7 @@ function lookup_sow_id_description(list_of_sows, detail_info) {
 	   ret_array.push([si, description]);
 	}
 	return ret_array;
-} //lookup_sow_id_description
+} //get_sow_asset_ids_description_from_bom
 
 
 
@@ -179,34 +179,34 @@ function lookup_sow_id_description(list_of_sows, detail_info) {
 
 // MAIN Start
 var sow_bill_of_materials;
-var detail_bom_info;
+var sow_quote_costs;
 
 // // example with 2 asset ids
-// sow_bill_of_materials =  "1.0	WX-C9999-X	Cat4500 E-Series 6-Slot Chassis fan no ps	2	$7,461.75 \n1.1 WS-X4748-RJ45-E	Catalyst 4500 E-Series 48-Port10/100/1000 Non-Bl;ocking	2	$10,449.44\n2.0	WS-c4999-F	Cat4500 E-Series 6-Slot Chassis fan no ps	2	$7,461.75\n2.1	WS-X4748-RJ45-E	Cataqlyst 4500 E-Series 48-Port 10/100/1000 Non-Blcoking	2	$7,461.75";
+ sow_bill_of_materials =  "1.0	WX-C9999-X	Cat4500 E-Series 6-Slot Chassis fan no ps	2	$7,461.75 \n1.1 WS-X4748-RJ45-E	Catalyst 4500 E-Series 48-Port10/100/1000 Non-Bl;ocking	2	$10,449.44\n2.0	WS-c4999-F	Cat4500 E-Series 6-Slot Chassis fan no ps	2	$7,461.75\n2.1	WS-X4748-RJ45-E	Cataqlyst 4500 E-Series 48-Port 10/100/1000 Non-Blcoking	2	$7,461.75";
 // use this example with abgove sow_bill_of_materails and the components will be empoty
-// detail_bom_info = "lakdsjflkadjsf lkadjsfladsj flkj afdslkj adslkfj aldfskj fa";
+// sow_quote_costs = "lakdsjflkadjsf lkadjsfladsj flkj afdslkj adslkfj aldfskj fa";
 
- // detail_bom_info = "Pricing Table Notes: \n \n 1.	A Contract Variation will be executed between the parties to add the incremental charge to the existing ‘TWS Service 3 – Data Centre to Data Centre’ Resource Unit\n 2.	This solution will be delivered under the T&Cs of the existing DNV agreement between Qantas and Telstra. A contract variation will be required to add some new Resource Units (price points), otherwise the service model will be as per the existing agreement\n \n 22\n \n Once Off Charges\n \n \n Consultancy Services ~ GST Excl	Units	Unit Price	Extended Price\n \n \n Proramme Support / Imlementation Da - 8 hours\n 5	1135.68	$5,678.40\n \n Ongoing Resource Unit Charges\n Additional Resource Units -GST Excl	Quanity	RU Price(per month)	Unit Extended Price	Total Contract Value\n Firewall-Infrastructure-New-Complex (WX-C9999-X)	2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support line 1\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline2\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2\t$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY\t2\t$     324.44	$   648.88	$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)	$    470.97 $   1,883.88	$  90,426.24\n"
+  sow_quote_costs = "Pricing Table Notes: \n \n 1.	A Contract Variation will be executed between the parties to add the incremental charge to the existing ‘TWS Service 3 – Data Centre to Data Centre’ Resource Unit\n 2.	This solution will be delivered under the T&Cs of the existing DNV agreement between Qantas and Telstra. A contract variation will be required to add some new Resource Units (price points), otherwise the service model will be as per the existing agreement\n \n 22\n \n Once Off Charges\n \n \n Consultancy Services ~ GST Excl	Units	Unit Price	Extended Price\n \n \n Proramme Support / Imlementation Da - 8 hours\n 5	1135.68	$5,678.40\n \n Ongoing Resource Unit Charges\n Additional Resource Units -GST Excl	Quanity	RU Price(per month)	Unit Extended Price	Total Contract Value\n Firewall-Infrastructure-New-Complex (WX-C9999-X)	2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support line 1\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline2\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2\t$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY\t2\t$     324.44	$   648.88	$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)	$    470.97 $   1,883.88	$  90,426.24\n"
 
  // test data from get_data.exe testsingleassetid1
 // sow_bill_of_materials="1.0\tWS-C4999-E\tCat4500 "
-//  detail_bom_info = "1.0\tWS-C4999-E\tCat4500 E-Series 6-Slot Chassis fan no ps\t2\t$7,461.75 \n1.1 WS-X4748-RJ45-E Catalyst 4500 E-Series 48-Port10/100/1000 Non-Bl;ocking\t2\t$10,449.44\n2.0\tWS-c4999-F\tCat4500 E-Series 6-Slot Chassis fan no ps\t2\t$7,461.75\n2.1\tWS-X4748-RJ45-E Cataqlyst 4500 E-Series 48-Port 10/100/1000 Non-Blcoking\t2\t$7,461.75"
+//  sow_quote_costs = "1.0\tWS-C4999-E\tCat4500 E-Series 6-Slot Chassis fan no ps\t2\t$7,461.75 \n1.1 WS-X4748-RJ45-E Catalyst 4500 E-Series 48-Port10/100/1000 Non-Bl;ocking\t2\t$10,449.44\n2.0\tWS-c4999-F\tCat4500 E-Series 6-Slot Chassis fan no ps\t2\t$7,461.75\n2.1\tWS-X4748-RJ45-E Cataqlyst 4500 E-Series 48-Port 10/100/1000 Non-Blcoking\t2\t$7,461.75"
 
 
 
 // test data from get_data.exe testsingleassetid2
-sow_bill_of_materials="1.0\tWS-C4999-E\tCat4500 E-Series 6-Slot Chassis fan no ps\t2\t$7,461.75 \n1.1 WS-X4748-RJ45-E\tCatalyst 4500 E-Series 48-Port10/100/1000 Non-Bl;ocking 2\t$10,449.44\n2.0 WS-c4999-F\tCat4500 E-Series 6-Slot Chassis fan no ps\t2\t$7,461.75\n2.1  WS-X4748-RJ45-E\tCataqlyst 4500 E-Series 48-Port 10/100/1000 Non-Blcoking\t2\t$7,461.75"
+// sow_bill_of_materials="1.0\tWS-C4999-E\tZero component Cat4500 E-Series 6-Slot Chassis fan no ps\t2\t$7,461.75 \n1.1 WS-X4748-RJ45-E\tfirst component  Catalyst 4500 E-Series 48-Port10/100/1000 Non-Bl;ocking 2\t$10,449.44\n2.0 WS-c4999-F\tCat4500 E-Series 6-Slot Chassis fan no ps\t2\t$7,461.75\n2.1  WS-X4748-RJ45-E\tCataqlyst 4500 E-Series 48-Port 10/100/1000 Non-Blcoking\t2\t$7,461.75"
 
- detail_bom_info = "Firewall-Infrastructure-New-Complex (WS-C4999-E)  2   $     1,837.33 $   3,674.66 $  176,383.68\n Firewall-Support line 1\t2\t$     324.44    $   648.88  $  31,146.24\nFirewall-Support xline2\t2\t$     324.44  $   648.88  $  31,146.24\nFirewall-Infrastructure-New-Complex (ASA6666)\t2\t$    - $   -    $  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2  $     1,837.33 $   3,674.66 $  176,383.68\n Firewall-Support YYYY\t2\t$     324.44  $   648.88  $  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)   $    470.97 $   1,883.88    $  90,426.24\n"
+//  sow_quote_costs = "pre content entry (WS-C4999-E) content after  2   $     1,837.33 $   3,674.66 $  176,383.68\n Firewall-Support line 1\t2\t$     324.44    $   648.88  $  31,146.24\nFirewall-Support xline2\t2\t$     324.44  $   648.88  $  31,146.24\nFirewall-Infrastructure-New-Complex (ASA6666)\t2\t$    - $   -    $  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2  $     1,837.33 $   3,674.66 $  176,383.68\n Firewall-Support YYYY\t2\t$     324.44  $   648.88  $  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)   $    470.97 $   1,883.88    $  90,426.24\n"
 
 // simple example for one asset id
  // sow_bill_of_materials =  "1.0	WS-c4999-F	Cat4500 ";
-// detail_bom_info = "Firewall-Infrastructure-New-Complex (WX-C9999-X)	2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support line 1\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline2\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2\t$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY\t2\t$     324.44	$   648.88	$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)	$    470.97 $   1,883.88	$  90,426.24\n"
-// detail_bom_info = "blah\nblah\n1.0 XXXXXX\thello there after XXXX\tcell2\tcell3\n something else\n something else\n2.0 xxxxxxx nothing here\nblah\nblah\n3.0 YYYYYY\tthis is text after YYYYYY\tcell2.x\n";
-// detail_bom_info = "Firewall-Infrastructure-New-Complex (YYYYYY) blah	2	$     1,837.33 $   3,674.66	$  176,383.68"
+// sow_quote_costs = "Firewall-Infrastructure-New-Complex (WX-C9999-X)	2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support line 1\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline2\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2\t$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2	$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY\t2\t$     324.44	$   648.88	$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)	$    470.97 $   1,883.88	$  90,426.24\n"
+// sow_quote_costs = "blah\nblah\n1.0 XXXXXX\thello there after XXXX\tcell2\tcell3\n something else\n something else\n2.0 xxxxxxx nothing here\nblah\nblah\n3.0 YYYYYY\tthis is text after YYYYYY\tcell2.x\n";
+// sow_quote_costs = "Firewall-Infrastructure-New-Complex (YYYYYY) blah	2	$     1,837.33 $   3,674.66	$  176,383.68"
 
 // with no matches
-//detail_bom_info = "blah\nblah\n1.0 X\thello there after XXXX\tcell2\tcell3\n something else\n something else\n2.0 xxxxxxx nothing here\nblah\nblah\n3.0 Y\tthis is text after YYYYYY\tcell2.x\n";
+//sow_quote_costs = "blah\nblah\n1.0 X\thello there after XXXX\tcell2\tcell3\n something else\n something else\n2.0 xxxxxxx nothing here\nblah\nblah\n3.0 Y\tthis is text after YYYYYY\tcell2.x\n";
 
 function matchWords(subject, words) {
     var regexMetachars = /[(){[*+?.\\^$|]/g;
@@ -230,31 +230,31 @@ function matchWords(subject, words) {
 // res=matchWords(subject, ["one","two","three"]);
 // debug(res);
 
-var levenshtein = require('fast-levenshtein');
-var distance = levenshtein.get('back', 'book');   // 2
-debug(distance);
+// var levenshtein = require('fast-levenshtein');
+// var distance = levenshtein.get('back', 'book');   // 2
+// debug(distance);
 
 
 
-// // STEP 1
-// // var user_sow_filename = get_user_selection();
+// STEP 1
+// var user_sow_filename = get_user_selection();
 
-// // STEP 2
-// // get text from file for user_sow_filename
-// // sow_bill_of_materials=run_mid(gen_get_data_exec(user_sow_filename, "Bill of Materials"))
-// // detail_bom_info=run_mid(gen_get_data_exec(user_sow_filename, "Quote"))
+// STEP 2
+// get text from file for user_sow_filename
+// sow_bill_of_materials=run_mid(gen_get_data_exec(user_sow_filename, "Bill of Materials"))
+// sow_quote_costs=run_mid(gen_get_data_exec(user_sow_filename, "Quote"))
 
-// // STEP 3
-// var SOW_ITEM_IDS=find_sow_ids(sow_bill_of_materials);
-// if (SOW_ITEM_IDS === null) { raise_error("No SOW Item IDs found"); }
+// STEP 3
+var SOW_ITEM_IDS=find_sow_ids_in_quote_costs(sow_bill_of_materials);
+if (SOW_ITEM_IDS === null) { raise_error("No SOW Item IDs found"); }
 
-// // STEP 4
-// var SOW_ITEM_IDS_AND_DESCRIPTION=lookup_sow_id_description(SOW_ITEM_IDS, detail_bom_info);
-// if (SOW_ITEM_IDS_AND_DESCRIPTION.length <= 0 ) { raise_error("No SOW Item Descriptions Found"); }
+// STEP 4
+var SOW_ITEM_IDS_AND_DESCRIPTION=get_sow_asset_ids_description_from_bom(SOW_ITEM_IDS, sow_quote_costs);
+if (SOW_ITEM_IDS_AND_DESCRIPTION.length <= 0 ) { raise_error("No SOW Item Descriptions Found"); }
 
-// // STEP 5
-// // display result to user
-// print_out_sow_component_array(SOW_ITEM_IDS_AND_DESCRIPTION);
+// STEP 5
+// display result to user
+print_out_sow_component_array(SOW_ITEM_IDS_AND_DESCRIPTION);
 
 
 

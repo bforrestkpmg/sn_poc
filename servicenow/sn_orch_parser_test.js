@@ -88,6 +88,18 @@ describe("OrchParser", function() {
       var compare_res=compare_arrays(res, expected_arr);
       expect(compare_res).to.equal(true);
     });
+
+    describe("find_item_details_for_sow_id", function(){
+      it("", function() {
+        // var ip_str="fodder\nhello\nblah(xxx)\tthere\nhow\nare\nanother(yyy)blah\nblah2";
+var ip_str = "Firewall-Infrastructure-New-Complex (WS-C4999-E)  2   $     1,837.33 $   3,674.66 $  176,383.68\n Firewall-Support line 1\t2\t$     324.44    $   648.88  $  31,146.24\nFirewall-Support xline2\t2\t$     324.44  $   648.88  $  31,146.24\nFirewall-Infrastructure-New-Complex (ASA6666)\t2\t$    - $   -    $  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2  $     1,837.33 $   3,674.66 $  176,383.68\n Firewall-Support YYYY\t2\t$     324.44  $   648.88  $  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)   $    470.97 $   1,883.88    $  90,426.24\n"
+
+        var res=OrchParser.find_item_details_for_sow_id("WS-C4999-E", ip_str);
+        var expected=["WS-C4999-E", ",  Firewall-Support line 1, Firewall-Support xline2"]
+        var compare_res=compare_arrays(res, expected);
+        console.log(res);
+      });
+    }); // find_item_details_for-sowid
   });
 
   // describe("#greets", function() {
