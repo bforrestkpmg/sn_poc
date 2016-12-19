@@ -3,33 +3,6 @@ var expect = chai.expect;
 
 // starting frmo scratch with https://nicolas.perriault.net/code/2013/testing-frontend-javascript-code-using-mocha-chai-and-sinon/
 
-// describe("Cow", function() {
-//   describe("constructor", function() {
-//     it("should have a default name", function() {
-//       var cow = new Cow();
-//       expect(cow.name).to.equal("Anon cow");
-//     });
-
-//     it("should set cow's name if provided", function() {
-//       var cow = new Cow("Kate");
-//       expect(cow.name).to.equal("Kate");
-//     });
-//   });
-
-//   describe("#greets", function() {
-//     it("should throw if no target is passed in", function() {
-//       expect(function() {
-//         (new Cow()).greets();
-//       }).to.throw(Error);
-//     });
-
-//     it("should greet passed target", function() {
-//       var greetings = (new Cow("Kate")).greets("Baby");
-//       expect(greetings).to.equal("Kate greets Baby");
-//     });
-//   });
-// });
-// Warn if overriding existing method
 function compare_arrays(arr1,array) {
 		// if the other array is a falsy value, return
 		if (!array)
@@ -129,17 +102,3 @@ describe("OrchParser", function() {
 
 
 	});
-
-	// describe("#greets", function() {
-	//   it("should throw if no target is passed in", function() {
-	//     expect(function() {
-	//       (new Cow()).greets();
-	//     }).to.throw(Error);
-	//   });
-
-	//   it("should greet passed target", function() {
-	//     var greetings = (new Cow("Kate")).greets("Baby");
-	//     expect(greetings).to.equal("Kate greets Baby");
-	//   });
-	// });
-});
