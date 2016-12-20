@@ -237,7 +237,7 @@ var result = str.split(regex);
 // where x = matched asset id, y = contenet before, z = content after
 //array_of_indexes specifies which part of the match we include in component info
 find_item_details_for_sow_id: function(idx, regex_preparsed_array, further_regex_split, array_of_index) {
-  console.log(regex_preparsed_array);
+  // console.log(regex_preparsed_array);
   if(typeof(array_of_index)==='undefined') array_of_index = [1,2];
   if(typeof(further_regex_split)==='undefined') further_regex_split = "\t";
   var component_info = "";
@@ -250,12 +250,12 @@ find_item_details_for_sow_id: function(idx, regex_preparsed_array, further_regex
 
   all_content_for_asset_id[0]=regex_preparsed_array[idx][0];
   component_info=regex_preparsed_array[idx][1]  + ", ";
-  console.log("before loop");
-  console.log(component_info);
+  // console.log("before loop");
+  // console.log(component_info);
   for(var i = idx+1;i < regex_preparsed_array.length;i++){
     theline_arr=regex_preparsed_array[i];
-     console.log("looking at");
-     console.log(theline_arr[0]);
+     // console.log("looking at");
+     // console.log(theline_arr[0]);
     if (theline_arr[0] === "")
     {
       // TODO lets allow us to use different part of the matches
@@ -273,8 +273,8 @@ find_item_details_for_sow_id: function(idx, regex_preparsed_array, further_regex
       // console.log(incoming_compontent_info);
 
       // FOR NOW just take the 'after'
-      console.log("Adding:");
-      console.log(incoming_compontent_info[0]);
+      // console.log("Adding:");
+      // console.log(incoming_compontent_info[0]);
       component_info = component_info + incoming_compontent_info[0]+ ", ";
       // console.log("component_info: ");
       // console.log(component_info);
@@ -290,11 +290,11 @@ find_item_details_for_sow_id: function(idx, regex_preparsed_array, further_regex
       break;
     }
    } // for
-   console.log("final:");
-      console.log(component_info);
+   // console.log("final:");
+   //    console.log(component_info);
   all_content_for_asset_id[1]=component_info;
-  console.log("returning");
-  console.log(all_content_for_asset_id);
+  // console.log("returning");
+  // console.log(all_content_for_asset_id);
   return all_content_for_asset_id
 }, // find_item_details_for_sow_id
 
@@ -338,7 +338,7 @@ get_sow_asset_ids_description_from_bom: function (list_of_sows, sow_quote_costs)
   for (i = 0; i < list_of_sows.length; i++) { 
      si=list_of_sows[i];
      pre_parsed_sow_quote_costs = this.preparse_array_of_strings(si, sow_quote_costs);
-     // console.log(pre_parsed_sow_quote_costs);
+      console.log(pre_parsed_sow_quote_costs);
 
      fuzzy_match_pre_parse=this.calc_fuzzy_match_to_regex_list(si, pre_parsed_sow_quote_costs);
      // console.log(fuzzy_match_pre_parse);
