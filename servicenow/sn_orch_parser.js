@@ -147,7 +147,8 @@ get_closest_match_from_fuzzy_match_list: function(fuzzy_list)
     // 2D array, each elment = [exracted matching regex, "content before match", "content after match"]
     // OR ["" no matching regex, line, ""]
  preparse_array_of_strings: function(regex, inputstrings) {
-  // console.log(inputstrings);
+   // console.log(inputstrings);
+   // console.log(regex);
     var lines = inputstrings.split('\n');
     var res_array=[];
     // we build up based on regex matches 
@@ -158,11 +159,15 @@ get_closest_match_from_fuzzy_match_list: function(fuzzy_list)
     for(var i = 0;i < lines.length;i++){
           theline=lines[i];
       respdata_array=[];
+      // reg=regExpEscape(regex);
       reg=regex;
       // reg='([^]*)' + regex + '([^]*)';
       // reg=/\(([A-Za-z0-9\-]*)\)/;
+      // console.log("regex");
+      // console.log(reg);
       matches=theline.match(reg);
       matches_split=theline.split(reg);
+      // console.log("theline");
       // console.log(theline);
       // console.log("matches");
       // console.log(matches);
@@ -332,13 +337,14 @@ get_sow_asset_ids_description_from_bom: function (list_of_sows, sow_quote_costs)
   var final_response = [];
   var asset_and_details=[];
   var res;
+  var asset_id_filter 
 
   var pre_parsed_sow_quote_costs = [];
 
   for (i = 0; i < list_of_sows.length; i++) { 
      si=list_of_sows[i];
-     pre_parsed_sow_quote_costs = this.preparse_array_of_strings(si, sow_quote_costs);
-      console.log(pre_parsed_sow_quote_costs);
+     pre_parsed_sow_quote_costs = this.preparse_array_of_strings(/\([A-Z][A-Za-z0-9\-]+\)/, sow_quote_costs);
+      // console.log(pre_parsed_sow_quote_costs);
 
      fuzzy_match_pre_parse=this.calc_fuzzy_match_to_regex_list(si, pre_parsed_sow_quote_costs);
      // console.log(fuzzy_match_pre_parse);

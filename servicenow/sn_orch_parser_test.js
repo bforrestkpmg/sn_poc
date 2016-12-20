@@ -69,6 +69,8 @@ describe("levenshtein", function() {
 					});
 
 describe("OrchParser", function() {
+
+
 	describe("support functions", function() {
 		it("splits strings ", function() {
 		var input_str = "hello there how";
@@ -77,6 +79,7 @@ describe("OrchParser", function() {
 		var compare_res=compare_arrays(res, expected_arr);
 		expect(compare_res).to.equal(true);
 	});
+
 				it("splits strings ", function() {
 					    var input_str = "hello\tthere\thow";
     var expected_arr = [ "hello", "there", "how" ];
@@ -202,47 +205,43 @@ describe("OrchParser", function() {
 			});
 
 			});
-			describe("get all assets and all components", function(){
-					it("for a list of ids, get the components for each", function() {
-						console.log("start");
-			var sow_quote_costs = "Pngoing Resource Unit Charges\n Additional Resource Units -GST Excl	Quanity	RU Price(per month)	Unit Extended Price	Total Contract Value\n Firewall-Infrastructure-New-Complex (WX-C9999-X)\t2\t$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support line 1\t\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline\t2	$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2	$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2\t$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY	2\t$     324.44	$   648.88	$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)	2	$    470.97 $   1,883.88	$  90,426.24\n"; 
-				// var res=OrchParser.get_sow_asset_ids_description_from_bom(["WX-C9999-X", "WS-c4999-F"], sow_quote_costs);
+			
+		describe("fuzzy match asset ids", function(){
+				it("builds a table of likely matches", function() {
+				var ip_array=[["(12x)", " there how"], ["(xxy)", "ok"], ["(xxxxxaa)", "thankyou"]];
+			     var res=OrchParser.calc_fuzzy_match_to_regex_list("xxx", ip_array);
+			     var expected_arr=[["(12x)", 4, " there how"], ["(xxy)", 3, "ok"], ["(xxxxxaa)", 6, "thankyou"]];
+				var compare_res=compare_arrays(res, expected_arr);
+				expect(compare_res).to.equal(true);
+				});
+		it("finds next best serach item match based on nearest (based on shortest levenshtein distance that is not zero)", function() {
+			     var ip_array=[["(12x)", 4, " there how"], ["(xxy)", 3, "ok"], ["(xxxxxaa)", 6, "thankyou"]];
+			     var res=OrchParser.get_closest_match_from_fuzzy_match_list(ip_array);
+				expect(res).to.equal("(xxy)");
+			});
+			it("handles when nothing found", function() {
+var ip_array=[["(12x)", " there how"], ["(xxy)", "ok"], ["(xxxxxaa)", "thankyou"]];
+			     var res=OrchParser.calc_fuzzy_match_to_regex_list("xxx", ip_array);
+			     var expected_arr=[["(12x)", 4, " there how"], ["(xxy)", 3, "ok"], ["(xxxxxaa)", 6, "thankyou"]];
+				var compare_res=compare_arrays(res, expected_arr);
+				expect(compare_res).to.equal(true);
+			});
+			it	("finds actual match too)", function() {
+					var ip_array=[["(12x)", " there how"], ["(xxx)", "ok"], ["(xxxxxaa)", "thankyou"]];
+					  var res_arr=OrchParser.calc_fuzzy_match_to_regex_list("xxx", ip_array);
+			     var res=OrchParser.get_closest_match_from_fuzzy_match_list(res_arr);
+				expect(res).to.equal("(xxx)");
+			});
+			
+	});
+		describe("get all assets and all components", function(){
+		it("for a list of ids, get the components for each", function() {
+		var sow_quote_costs = "Pngoing Resource Unit Charges\n Additional Resource Units -GST Excl	Quanity	RU Price(per month)	Unit Extended Price	Total Contract Value\n Firewall-Infrastructure-New-Complex (WX-C9999-X)\t2\t$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support line 1\t\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline\t2	$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2	$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2\t$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY	2\t$     324.44	$   648.88	$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)	2	$    470.97 $   1,883.88	$  90,426.24\n"; 
 				var res=OrchParser.get_sow_asset_ids_description_from_bom(["WX-C9999-X"], sow_quote_costs);
-				console.log("this test");
-				console.log(res);
-				var expected=[["WX-C9999-X", ",Firewall - Infrastructure - New - Complex, component 1, component 2, "]];
-				console.log(expected);
+				var expected=[["(WX-C9999-X)", " Firewall-Infrastructure-New-Complex ,  Firewall-Support line 1, Firewall-Support xline, "]] ;
 				var compare_res=compare_arrays(res, expected);
 				expect(compare_res).to.equal(true);
 			});
 			});
-// 		describe("fuzzy match asset ids", function(){
-// 				it("builds a table of likely matches", function() {
-// 				var ip_array=[["(12x)", " there how"], ["(xxy)", "ok"], ["(xxxxxaa)", "thankyou"]];
-// 			     var res=OrchParser.calc_fuzzy_match_to_regex_list("xxx", ip_array);
-// 			     var expected_arr=[["(12x)", 4, " there how"], ["(xxy)", 3, "ok"], ["(xxxxxaa)", 6, "thankyou"]];
-// 				var compare_res=compare_arrays(res, expected_arr);
-// 				expect(compare_res).to.equal(true);
-// 				});
-// 		it("finds next best serach item match based on nearest (based on shortest levenshtein distance that is not zero)", function() {
-// 			     var ip_array=[["(12x)", 4, " there how"], ["(xxy)", 3, "ok"], ["(xxxxxaa)", 6, "thankyou"]];
-// 			     var res=OrchParser.get_closest_match_from_fuzzy_match_list(ip_array);
-// 				expect(res).to.equal("(xxy)");
-// 			});
-// 			it("handles when nothing found", function() {
-// var ip_array=[["(12x)", " there how"], ["(xxy)", "ok"], ["(xxxxxaa)", "thankyou"]];
-// 			     var res=OrchParser.calc_fuzzy_match_to_regex_list("xxx", ip_array);
-// 			     var expected_arr=[["(12x)", 4, " there how"], ["(xxy)", 3, "ok"], ["(xxxxxaa)", 6, "thankyou"]];
-// 				var compare_res=compare_arrays(res, expected_arr);
-// 				expect(compare_res).to.equal(true);
-// 			});
-// 			it	("finds actual match too)", function() {
-// 					var ip_array=[["(12x)", " there how"], ["(xxx)", "ok"], ["(xxxxxaa)", "thankyou"]];
-// 					  var res_arr=OrchParser.calc_fuzzy_match_to_regex_list("xxx", ip_array);
-// 			     var res=OrchParser.get_closest_match_from_fuzzy_match_list(res_arr);
-// 				expect(res).to.equal("(xxx)");
-// 			});
-			
-	// });
 	});
 });
