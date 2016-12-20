@@ -242,6 +242,15 @@ var ip_array=[["(12x)", " there how"], ["(xxy)", "ok"], ["(xxxxxaa)", "thankyou"
 				var compare_res=compare_arrays(res, expected);
 				expect(compare_res).to.equal(true);
 			});
+
+		it("for a list of ids, get the components for each", function() {
+		var sow_quote_costs = "Pngoing Resource Unit Charges\n Additional Resource Units -GST Excl	Quanity	RU Price(per month)	Unit Extended Price	Total Contract Value\n Firewall-Infrastructure-New-Complex (WX-C9999-X)\t2\t$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support line 1\t\t2\t$     324.44	$   648.88	$  31,146.24\nFirewall-Support xline\t2	$     324.44	$   648.88	$  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2	$    - $   -	$  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2\t$     1,837.33 $   3,674.66	$  176,383.68\n Firewall-Support YYYY	2\t$     324.44	$   648.88	$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)	2	$    470.97 $   1,883.88	$  90,426.24\n"; 
+				var res=OrchParser.get_sow_asset_ids_description_from_bom(["WX-C9999-X", "WS-c4999-F"], sow_quote_costs);
+				var expected=[["(WX-C9999-X)", " Firewall-Infrastructure-New-Complex ,  Firewall-Support line 1, Firewall-Support xline, "], ["(WS-c4999-F)", " Firewall-Infrastructure-New-Complex ,  Firewall-Support YYYY, "]];
+				console.log(res);
+				var compare_res=compare_arrays(res, expected);
+				expect(compare_res).to.equal(true);
+			});
 			});
 	});
 });

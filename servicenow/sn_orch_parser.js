@@ -340,12 +340,12 @@ get_sow_asset_ids_description_from_bom: function (list_of_sows, sow_quote_costs)
   var asset_id_filter 
 
   var pre_parsed_sow_quote_costs = [];
+  pre_parsed_sow_quote_costs = this.preparse_array_of_strings(/\([A-Z][A-Za-z0-9\-]+\)/, sow_quote_costs);
 
   for (i = 0; i < list_of_sows.length; i++) { 
      si=list_of_sows[i];
-     pre_parsed_sow_quote_costs = this.preparse_array_of_strings(/\([A-Z][A-Za-z0-9\-]+\)/, sow_quote_costs);
+    console.log("SOW: "+ si);
       // console.log(pre_parsed_sow_quote_costs);
-
      fuzzy_match_pre_parse=this.calc_fuzzy_match_to_regex_list(si, pre_parsed_sow_quote_costs);
      // console.log(fuzzy_match_pre_parse);
 
