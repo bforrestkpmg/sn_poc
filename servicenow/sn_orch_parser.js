@@ -147,21 +147,31 @@ get_closest_match_from_fuzzy_match_list: function(fuzzy_list)
     // 2D array, each elment = [exracted matching regex, "content before match", "content after match"]
     // OR ["" no matching regex, line, ""]
  preparse_array_of_strings: function(regex, inputstrings) {
+  // console.log(inputstrings);
     var lines = inputstrings.split('\n');
     var res_array=[];
     // we build up based on regex matches 
     var respdata_array=[];
+    var matches;
+    var matches_split;
 
     for(var i = 0;i < lines.length;i++){
           theline=lines[i];
       respdata_array=[];
-      reg='([^]*)(' + regex + ')([^]*)';
-      //reg=regex;
+      reg=regex;
+      // reg='([^]*)' + regex + '([^]*)';
+      // reg=/\(([A-Za-z0-9\-]*)\)/;
       matches=theline.match(reg);
-     if (matches !== null) {
-      respdata_array[0] = matches[2];
-      respdata_array[1] = matches[1];
-      respdata_array[2] = matches[3];
+      matches_split=theline.split(reg);
+      // console.log(theline);
+      // console.log("matches");
+      // console.log(matches);
+      // console.log("matches_split");
+      // console.log(matches_split);
+     if ((matches !== null) && (matches_split !== null)) {
+      respdata_array[0] =  matches[0];
+      respdata_array[1] = matches_split[0];
+      respdata_array[2] = matches_split[1];
      }
       else
       {
@@ -169,6 +179,7 @@ get_closest_match_from_fuzzy_match_list: function(fuzzy_list)
       respdata_array[1] = theline;
       respdata_array[2] = "";
     }
+    // console.log(respdata_array);
     res_array.push(respdata_array);
     }
    return res_array;
@@ -213,7 +224,7 @@ var txtpattern = reg;
 var regex = new RegExp(txtpattern);
 var result = str.split(regex);
 
-   console.log(result);
+   // console.log(result);
    if (result=== null) { return [str]; }
    return result;
 },
@@ -226,9 +237,11 @@ var result = str.split(regex);
 // where x = matched asset id, y = contenet before, z = content after
 //array_of_indexes specifies which part of the match we include in component info
 find_item_details_for_sow_id: function(idx, regex_preparsed_array, further_regex_split, array_of_index) {
+  console.log(regex_preparsed_array);
   if(typeof(array_of_index)==='undefined') array_of_index = [1,2];
   if(typeof(further_regex_split)==='undefined') further_regex_split = "\t";
   var component_info = "";
+  var incoming_compontent_info = [];
   var parsed_id;
   var in_block=true;
   var all_content_for_asset_id=[];
@@ -236,10 +249,13 @@ find_item_details_for_sow_id: function(idx, regex_preparsed_array, further_regex
   component_info="";
 
   all_content_for_asset_id[0]=regex_preparsed_array[idx][0];
-  component_info=regex_preparsed_array[idx][1] + " " + regex_preparsed_array[idx][2]  + ", ";
+  component_info=regex_preparsed_array[idx][1]  + ", ";
+  console.log("before loop");
+  console.log(component_info);
   for(var i = idx+1;i < regex_preparsed_array.length;i++){
     theline_arr=regex_preparsed_array[i];
-    // console.log(theline_arr);
+     console.log("looking at");
+     console.log(theline_arr[0]);
     if (theline_arr[0] === "")
     {
       // TODO lets allow us to use different part of the matches
@@ -249,10 +265,19 @@ find_item_details_for_sow_id: function(idx, regex_preparsed_array, further_regex
       //  component_info += theline_arr[array_of_index[j]] + " ";
       // }
       // component_info += ", ";
-      // component_info += theline_arr[1] + " " + theline_arr[2] + ", ";
+      // console.log("theline_arr");
+      // console.log(theline_arr);
+      //component_info += theline_arr[1] + ", ";
+
+      incoming_compontent_info=this.split_components_further(theline_arr[1],  "\t");
+      // console.log(incoming_compontent_info);
 
       // FOR NOW just take the 'after'
-      component_info += theline_arr[2] + ", ";
+      console.log("Adding:");
+      console.log(incoming_compontent_info[0]);
+      component_info = component_info + incoming_compontent_info[0]+ ", ";
+      // console.log("component_info: ");
+      // console.log(component_info);
       // only add comma if we're not the last item 
 
        // if (i < regex_preparsed_array.length-1) {
@@ -265,7 +290,11 @@ find_item_details_for_sow_id: function(idx, regex_preparsed_array, further_regex
       break;
     }
    } // for
+   console.log("final:");
+      console.log(component_info);
   all_content_for_asset_id[1]=component_info;
+  console.log("returning");
+  console.log(all_content_for_asset_id);
   return all_content_for_asset_id
 }, // find_item_details_for_sow_id
 
@@ -300,7 +329,7 @@ get_sow_asset_ids_description_from_bom: function (list_of_sows, sow_quote_costs)
   var idx_of_closest;
   var content;
 
-  var final_response = "";
+  var final_response = [];
   var asset_and_details=[];
   var res;
 
@@ -318,9 +347,10 @@ get_sow_asset_ids_description_from_bom: function (list_of_sows, sow_quote_costs)
      // console.log(idx_of_closest);
 
      asset_and_details=this.find_item_details_for_sow_id(idx_of_closest, pre_parsed_sow_quote_costs);
-      console.log(asset_and_details);
+       // console.log(asset_and_details);
+     final_response.push(asset_and_details);
   }
-  return ret_array;
+  return final_response;
 } //get_sow_asset_ids_description_from_bom
 
 }; //OrchParser Class
