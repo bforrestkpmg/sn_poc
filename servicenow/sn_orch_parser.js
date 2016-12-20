@@ -135,7 +135,6 @@ get_closest_match_from_fuzzy_match_list: function(fuzzy_list)
   var closest=99999;
   var item_idx;
   for(var i = 0;i < fuzzy_list.length;i++){
-    console.log("looking: " + fuzzy_list[i][1] );
     if (fuzzy_list[i][1] < closest)
     {
        closest=fuzzy_list[i][1];
@@ -147,7 +146,8 @@ get_closest_match_from_fuzzy_match_list: function(fuzzy_list)
 },
 
 
-    // 2D array, each elment = [exracted asset id, "content"
+    // 2D array, each elment = [exracted matching regex, "content before match", "content after match"]
+    // OR ["" no matching regex, line, ""]
  preparse_array_of_strings: function(regex, inputstrings) {
     var lines = inputstrings.split('\n');
     var res_array=[];
@@ -157,24 +157,30 @@ get_closest_match_from_fuzzy_match_list: function(fuzzy_list)
     for(var i = 0;i < lines.length;i++){
           theline=lines[i];
       respdata_array=[];
-      reg='(' + regex + ')(.*)';
+      reg='([^]*)(' + regex + ')([^]*)';
       //reg=regex;
       matches=theline.match(reg);
      if (matches !== null) {
-      respdata_array[0] = matches[1];
-      respdata_array[1] = matches[2];
+      respdata_array[0] = matches[2];
+      respdata_array[1] = matches[1];
+      respdata_array[2] = matches[3];
      }
       else
       {
       respdata_array[0] = "";
       respdata_array[1] = theline;
+      respdata_array[2] = "";
     }
     res_array.push(respdata_array);
     }
    return res_array;
 },
 
-find_item_details_for_sow_id: function(id, description_text, skip_fuzzy) {
+// uses preparsed array
+// iterate over each row
+// find closes 0 or closes to 0 (e.g. most similar)
+// then extract components that match below
+find_item_details_for_sow_id: function(id, preparsed_array) {
   if(typeof(skip_fuzzy)==='undefined') skip_fuzzy = false;
 // find_item_details_for_sow_id: function(id, description_text) {
   var matches;
@@ -246,19 +252,6 @@ find_item_details_for_sow_id: function(id, description_text, skip_fuzzy) {
   return all_content_for_asset_id
 }, // find_item_details_for_sow_id
 
-wrapper_find_item_details_for_sow_id: function(id, description_text) {
-  var ret=this.find_item_details_for_sow_id(id, description_text,false);
-  // if we don't get anything we go again but using  the closest fuzzy match term
-  // console.log("closest_asset_id");
-  // console.log(closest_asset_id);
-  if (closest_asset_id === null)
-  {
-    // console.log("going again");
-      ret=this.find_item_details_for_sow_id(closest_asset_id, description_text,true);
-    // console.log(ret);
-  }
-  return ret;
-},
 
 find_sow_ids_in_quote_costs: function (bom_str) {
   var matches;

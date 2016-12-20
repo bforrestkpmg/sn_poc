@@ -78,9 +78,11 @@ describe("OrchParser", function() {
 			expect(OrchParser.preparse_asset_id("hellow-][there")).to.equal("hellowthere");
 		});
 		it("should create array of preparsed content", function() {
-			var input_str = "1. hello there how\n2are you\n3.i am fine";
-			var expected_arr = [["1."," hello there how"],["","2are you"],["3.","i am fine"]];
+			var input_str = "before1 1. hello there how\n2are you\nbefore3 3.i am fine";
+			var expected_arr = [[ "1.", "before1 "," hello there how"], ["", "2are you", ""], ["3.", "before3 ", "i am fine"]]
 			var res=OrchParser.preparse_array_of_strings("[0-9]\\.", input_str);
+			console.log(res);
+			console.log(expected_arr);
 			var compare_res=compare_arrays(res, expected_arr);
 			expect(compare_res).to.equal(true);
 		});
@@ -149,13 +151,33 @@ describe("OrchParser", function() {
 			     var res=OrchParser.get_closest_match_from_fuzzy_match_list(ip_array);
 				expect(res).to.equal("(xxy)");
 			});
+			it("handles when nothing found", function() {
+var ip_array=[["(12x)", " there how"], ["(xxy)", "ok"], ["(xxxxxaa)", "thankyou"]];
+			     var res=OrchParser.calc_fuzzy_match_to_regex_list("xxx", ip_array);
+			     var expected_arr=[["(12x)", 4, " there how"], ["(xxy)", 3, "ok"], ["(xxxxxaa)", 6, "thankyou"]];
+				var compare_res=compare_arrays(res, expected_arr);
+				expect(compare_res).to.equal(true);
+			});
 			it	("finds actual match too)", function() {
 					var ip_array=[["(12x)", " there how"], ["(xxx)", "ok"], ["(xxxxxaa)", "thankyou"]];
 					  var res_arr=OrchParser.calc_fuzzy_match_to_regex_list("xxx", ip_array);
 			     var res=OrchParser.get_closest_match_from_fuzzy_match_list(res_arr);
-			     console.log(res);
 				expect(res).to.equal("(xxx)");
 			});
+			it("preparses and matches regex", function() {
+			var ip_str = "textbefore(WX-C9999-E)	2	$1,837.33	$	3,674.66	$  176,383.68\nwsc4999 first line compnoent	2	$ 324.44	$ 648.88	$  31,146.24\nwsc4999 2nd line	2	$324.44	$648.88	$31,146.24\nnew item(ASA6666)	2	$-	$-	$ -\n new item 4d line(WS-c4999-F)	2	$1,837.33	$3,674.66	$  176,383.68\nwsc49999f 2ndline	2	$324.44	$648.88	$31,146.24\nnothing to see here	9	$ 470.97 	$   1,883.88	$  90,426.24\n" 
+				var res=OrchParser.find_item_details_for_sow_id("WX-C9999-E", ip_str, true);
+				var expected=["WX-C9999-E", ", wsc4999 first line compnoent, wsc4999 2nd line"];
+				var compare_res=compare_arrays(res, expected);
+				expect(compare_res).to.equal(true);
+			});
+			// it("finds components in brackets below the current top line item for a specific id using fuzzy matching", function() {
+			// var ip_str = "textbefore(WX-C9999-E)	2	$1,837.33	$	3,674.66	$  176,383.68\nwsc4999 first line compnoent	2	$ 324.44	$ 648.88	$  31,146.24\nwsc4999 2nd line	2	$324.44	$648.88	$31,146.24\nnew item(ASA6666)	2	$-	$-	$ -\n new item 4d line(WS-c4999-F)	2	$1,837.33	$3,674.66	$  176,383.68\nwsc49999f 2ndline	2	$324.44	$648.88	$31,146.24\nnothing to see here	9	$ 470.97 	$   1,883.88	$  90,426.24\n" 
+			// 	var res=OrchParser.find_item_details_for_sow_id("WX-C9999-E", ip_str, true);
+			// 	var expected=["WX-C9999-E", ", wsc4999 first line compnoent, wsc4999 2nd line"];
+			// 	var compare_res=compare_arrays(res, expected);
+			// 	expect(compare_res).to.equal(true);
+			// });
 			});
 
 
