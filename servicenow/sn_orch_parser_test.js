@@ -168,7 +168,6 @@ describe("OrchParser", function() {
 			["(WX-C9999-E)","Firewall - Infrastructure - New - Complex","after"]
 			];
 				var res=OrchParser.find_item_details_for_sow_id(0, ip_arr);
-				console.log(res);
 				var expected=["(WX-C9999-E)", "Firewall - Infrastructure - New - Complex after, " ];
 				var compare_res=compare_arrays(res, expected);
 				expect(compare_res).to.equal(true);
@@ -211,20 +210,7 @@ var ip_array=[["(12x)", " there how"], ["(xxy)", "ok"], ["(xxxxxaa)", "thankyou"
 			     var res=OrchParser.get_closest_match_from_fuzzy_match_list(res_arr);
 				expect(res).to.equal("(xxx)");
 			});
-			it("preparses and matches regex", function() {
-			var ip_str = "textbefore(WX-C9999-E)	2	$1,837.33	$	3,674.66	$  176,383.68\nwsc4999 first line compnoent	2	$ 324.44	$ 648.88	$  31,146.24\nwsc4999 2nd line	2	$324.44	$648.88	$31,146.24\nnew item(ASA6666)	2	$-	$-	$ -\n new item 4d line(WS-c4999-F)	2	$1,837.33	$3,674.66	$  176,383.68\nwsc49999f 2ndline	2	$324.44	$648.88	$31,146.24\nnothing to see here	9	$ 470.97 	$   1,883.88	$  90,426.24\n" 
-				var res=OrchParser.find_item_details_for_sow_id("WX-C9999-E", ip_str, true);
-				var expected=["WX-C9999-E", ", wsc4999 first line compnoent, wsc4999 2nd line"];
-				var compare_res=compare_arrays(res, expected);
-				expect(compare_res).to.equal(true);
-			});
-			// it("finds components in brackets below the current top line item for a specific id using fuzzy matching", function() {
-			// var ip_str = "textbefore(WX-C9999-E)	2	$1,837.33	$	3,674.66	$  176,383.68\nwsc4999 first line compnoent	2	$ 324.44	$ 648.88	$  31,146.24\nwsc4999 2nd line	2	$324.44	$648.88	$31,146.24\nnew item(ASA6666)	2	$-	$-	$ -\n new item 4d line(WS-c4999-F)	2	$1,837.33	$3,674.66	$  176,383.68\nwsc49999f 2ndline	2	$324.44	$648.88	$31,146.24\nnothing to see here	9	$ 470.97 	$   1,883.88	$  90,426.24\n" 
-			// 	var res=OrchParser.find_item_details_for_sow_id("WX-C9999-E", ip_str, true);
-			// 	var expected=["WX-C9999-E", ", wsc4999 first line compnoent, wsc4999 2nd line"];
-			// 	var compare_res=compare_arrays(res, expected);
-			// 	expect(compare_res).to.equal(true);
-			// });
+			
 			});
 
 
