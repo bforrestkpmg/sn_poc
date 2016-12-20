@@ -182,7 +182,7 @@ get_closest_match_from_fuzzy_match_list: function(fuzzy_list)
 // TODO figure out what hte tune distance is for various type of matches
 //
 find_closest_or_exact_match: function(id, regex_preparsed_array, tune_distance) {
-    if(typeof(skip_fuzzy)==='undefined') tune_distance = 100;
+   if(typeof(tune_distance)==='undefined') tune_distance = 100;
    var closest_distance=tune_distance;
    var distance_measure;
    var to_fuzzy_match;
@@ -205,6 +205,18 @@ find_closest_or_exact_match: function(id, regex_preparsed_array, tune_distance) 
     return match_index;
 }, // find_closes_or_exact_match
 
+
+split_components_further: function(str, reg){
+
+// var txtpattern = "(.*)" + reg; + "(.*)";
+var txtpattern = reg;
+var regex = new RegExp(txtpattern);
+var result = str.split(regex);
+
+   console.log(result);
+   if (result=== null) { return [str]; }
+   return result;
+},
 // uses preparsed array
 // goes to index foudn by same or closest match then reads everything to the the 
 // next regex match
@@ -212,7 +224,10 @@ find_closest_or_exact_match: function(id, regex_preparsed_array, tune_distance) 
 // [[ "WX-C9999-E", "before1 "," hello there how"], ["", "2are you", ""], ["WX-C7777-E", "before3 ", "i am fine"]];
 // e.g. [[x,y,z],[x,y,z]]
 // where x = matched asset id, y = contenet before, z = content after
-find_item_details_for_sow_id: function(idx, regex_preparsed_array) {
+//array_of_indexes specifies which part of the match we include in component info
+find_item_details_for_sow_id: function(idx, regex_preparsed_array, further_regex_split, array_of_index) {
+  if(typeof(array_of_index)==='undefined') array_of_index = [1,2];
+  if(typeof(further_regex_split)==='undefined') further_regex_split = "\t";
   var component_info = "";
   var parsed_id;
   var in_block=true;
@@ -227,8 +242,17 @@ find_item_details_for_sow_id: function(idx, regex_preparsed_array) {
     // console.log(theline_arr);
     if (theline_arr[0] === "")
     {
+      // TODO lets allow us to use different part of the matches
       // component if is before & after content
-       component_info += theline_arr[1] + " " + theline_arr[2] + ", ";
+      // for (var j=0; j < array_of_index; j++)
+      // {
+      //  component_info += theline_arr[array_of_index[j]] + " ";
+      // }
+      // component_info += ", ";
+      // component_info += theline_arr[1] + " " + theline_arr[2] + ", ";
+
+      // FOR NOW just take the 'after'
+      component_info += theline_arr[2] + ", ";
       // only add comma if we're not the last item 
 
        // if (i < regex_preparsed_array.length-1) {
@@ -271,13 +295,30 @@ find_sow_ids_in_quote_costs: function (bom_str) {
 get_sow_asset_ids_description_from_bom: function (list_of_sows, sow_quote_costs) {
   var ret_array=[];
   var id_description_pair;
+  var arr_strings = [];
+  var fuzzy_match_pre_parse = [];
+  var idx_of_closest;
+  var content;
+
+  var final_response = "";
+  var asset_and_details=[];
+  var res;
+
+  var pre_parsed_sow_quote_costs = [];
+
   for (i = 0; i < list_of_sows.length; i++) { 
      si=list_of_sows[i];
-     id_description_pair=this.wrapper_find_item_details_for_sow_id(si, sow_quote_costs);
-     // console.log(id_description_pair);
-     if (id_description_pair=== null) continue;
-     // add recorded entry to our list
-     ret_array.push(id_description_pair);
+     pre_parsed_sow_quote_costs = this.preparse_array_of_strings(si, sow_quote_costs);
+     // console.log(pre_parsed_sow_quote_costs);
+
+     fuzzy_match_pre_parse=this.calc_fuzzy_match_to_regex_list(si, pre_parsed_sow_quote_costs);
+     // console.log(fuzzy_match_pre_parse);
+
+     idx_of_closest=this.find_closest_or_exact_match(si, fuzzy_match_pre_parse,100);
+     // console.log(idx_of_closest);
+
+     asset_and_details=this.find_item_details_for_sow_id(idx_of_closest, pre_parsed_sow_quote_costs);
+      console.log(asset_and_details);
   }
   return ret_array;
 } //get_sow_asset_ids_description_from_bom
