@@ -91,10 +91,6 @@ describe("OrchParser", function() {
 	});
 
 	describe("constructor", function() {
-		it("defaults and sets asset id", function() {
-			OrchParser.setup();
-		});
-
 		it("should preparse asset ids by stripping out characters", function() {
 			expect(OrchParser.preparse_asset_id("hellow-][there")).to.equal("hellowthere");
 		});

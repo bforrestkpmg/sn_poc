@@ -15,5 +15,69 @@
   <script>mocha.setup('bdd')</script>
   <script src="sn_orch_parser_test.js"></script>
   <script>mocha.run();</script>
+
+  <div id="output"> </div>
+
+  <script>
+
+function print_out_item_data(sow_asset_id, components_text)
+{
+  x="<item><asset_id>" + sow_asset_id + "</asset_id><components>" + components_text + "</components><item>"
+  return x;
+}
+function print_out_sow_component_array(item_description_arr)
+{
+  s="";
+  for (i = 0; i < item_description_arr.length; i++) { 
+    // s=i.toString() + ": " + arr[i].toString();
+    s += print_out_item_data(item_description_arr[i][0], item_description_arr[i][1]);
+  }
+  document.getElementById("output").innerHTML = s;
+}
+
+
+// MAIN Start
+var sow_quote_costs
+var detail_bom_info;
+
+// simple example for one asset id
+sow_quote_costs =  "1.0 WX-C9999-E  Cat4500 E-Series 6-Slot Chassis fan no ps 2 $7,461.75 \n1.1 WS-X4748-RJ45-E Catalyst 4500 E-Series 48-Port10/100/1000 Non-Bl;ocking 2 $10,449.44\n2.0 WS-c4999-F  Cat4500 E-Series 6-Slot Chassis fan no ps 2 $7,461.75\n2.1  WS-X4748-RJ45-E Cataqlyst 4500 E-Series 48-Port 10/100/1000 Non-Blcoking  2 $7,461.75\n";
+detail_bom_info = "Firewall-Infrastructure-New-Comple (WX-C9999-E)\t2\t$1,837.33\t$   3,674.66\t$  176,383.68\n Firewall-Support line 1\t2\t$     324.44 $   648.88  $  31,146.24\nFirewall-Support xline2\t2\t$     324.44  $   648.88  $  31,146.24\nFirewall-Infrastructure-New-Complex (ASA5585)\t2\t$    - $   -  $  -\n Firewall-Infrastructure-New-Complex (WS-c4999-F)\t2\t$     1,837.33\t$   3,674.66\t$  176,383.68\n Firewall-Support YYYY\t2\t$     324.44\t$   648.88\t$  31,146.24\n Firewall-Infrastructure-New-Blah (Cat4506)\t$    470.97\t$   1,883.88\t$  90,426.24\n";
+
+// STEP 1
+// var user_sow_filename = get_user_selection();
+
+// STEP 2
+// get text from file for user_sow_filename
+// sow_bill_of_materials=run_mid(gen_get_data_exec(user_sow_filename, "Bill of Materials"))
+// sow_quote_costs=run_mid(gen_get_data_exec(user_sow_filename, "Quote"))
+
+// STEP 3
+
+// NOTE all the tests pass, but i cannot seem to instantiate these objects!
+// nothing is returned
+var sowitems;
+sowitems=OrchParser.find_sow_ids_in_quote_costs(sow_quote_costs);
+if ( sowitems === null) { raise_error("No SOW Item IDs found"); }
+
+// ISSUE, thes are always empty!?
+console.log(sowitems);
+
+// STEP 4
+var sow_item_ids_and_components;
+sow_item_ids_and_components=OrchParser.get_sow_asset_ids_description_from_bom(sowitems, detail_bom_info);
+if (sow_item_ids_and_components.length <= 0 ) { raise_error("No SOW Item Descriptions Found"); }
+
+// ISSUE, thes are always empty!?
+console.log(sow_item_ids_and_components);
+
+
+// STEP 5
+// display result to user
+print_out_sow_component_array(SOW_ITEM_IDS_AND_DESCRIPTION);
+
+
+  </script>
+
 </body>
 </html>

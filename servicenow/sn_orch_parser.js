@@ -5,13 +5,10 @@
   var distance_measure;
   var to_fuzzy_match="";
 
-
  function regExpEscape(literal_string) {
     return literal_string.replace(/[-[\]{}()*+!<=:?.\/\\^$|#\s,]/g, '\\$&');
 };
 var OrchParser = {
- setup: function() {
-},
 
 get_levi: function(x,y,z)
 {
@@ -304,10 +301,11 @@ find_item_details_for_sow_id: function(idx, regex_preparsed_array, further_regex
 }, // find_item_details_for_sow_id
 
 
-find_sow_ids_in_quote_costs: function (bom_str) {
+find_sow_ids_in_quote_costs: function (quote_content_string) {
+  // console.log("finding");
   var matches;
   var allmatches = [];
-  var lines = bom_str.split('\n');
+  var lines = quote_content_string.split('\n');
     for(var i = 0;i < lines.length;i++){
        // console.log("line counter: " + i.toString());
         matches=lines[i].match(/[1-9][0-9]*\.0\t([A-Z][A-Za-z0-9\-]*)\t(.+)/);
@@ -315,6 +313,7 @@ find_sow_ids_in_quote_costs: function (bom_str) {
         //code here using lines[i] which will give you each line
        allmatches.push(matches[1]);
     }
+  // console.log(allmatches);
   return allmatches;
 },
 
