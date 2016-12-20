@@ -92,11 +92,6 @@ levi=(function() {
 return levi.get(x,y,z);
 },
 
- preparse_asset_id: function(s) {
-        var t="";
-        t=s.replace(/[\[\]-]/g, '');
-        return t;
-},
 
 // generates 
 // arr[ [x,y,z], [x,y,z] ]
@@ -107,22 +102,25 @@ return levi.get(x,y,z);
 // e.g. we are effecgively 'exitending' the prepare array
 // returns the integer of the closest match
 
+ preparse_asset_id: function(s) {
+        var t="";
+        t=s.replace(/[\[\]-]/g, '');
+        return t;
+},
+
 calc_fuzzy_match_to_regex_list: function(id,preparse_array)
 {
     var res_array=[];
     var items_array=[];
     var current_preparse_item=[];
     var distance_levenstein_between_id_and_regex_extracted=null;
-    // console.log(preparse_array);
     for(var i = 0;i < preparse_array.length;i++){
       items_array=[];
-     // console.log("looking at prepare array input: " + preparse_array[i]);
       current_preparse_item=preparse_array[i];
       items_array[0]=current_preparse_item[0];
       items_array[2]=current_preparse_item[1];
 
       distance_levenstein_between_id_and_regex_extracted=this.get_levi(id, items_array[0]);
-      // console.log("distance: " + distance_levenstein_between_id_and_regex_extracted);
       items_array[1]=distance_levenstein_between_id_and_regex_extracted;
      res_array.push(items_array);
     }
@@ -176,77 +174,72 @@ get_closest_match_from_fuzzy_match_list: function(fuzzy_list)
    return res_array;
 },
 
-// uses preparsed array
-// iterate over each row
-// find closes 0 or closes to 0 (e.g. most similar)
-// then extract components that match below
-find_item_details_for_sow_id: function(id, preparsed_array) {
-  if(typeof(skip_fuzzy)==='undefined') skip_fuzzy = false;
-// find_item_details_for_sow_id: function(id, description_text) {
-  var matches;
-   // array [0] = asset id [1] = is all coponents that are part of that asset in single line comma separated
-   var all_content_for_asset_id = [];
-   var component_info = "";
-   var in_block;
-   var parsed_id;
-   closest_distance=99999;
-   closest_asset_id=null;
-
-   var lines = description_text.split('\n');
-   in_block=false;
-  for(var i = 0;i < lines.length;i++){
-    theline=lines[i];
-
-
-    if (!skip_fuzzy)
-    {
-       /// we use this only if 
-       fuzzy_matches=theline.match(/\(([A-Z][A-Za-z0-9\-]*)\)/)
-
-       // do we have things in brackets e.g. potential matches
-       if (fuzzy_matches === null) { continue; }
+// returns index of match or closes
+// iterates through array 
+// returns index of array if closest or exact match
+// null if nothing found
+//
+// TODO figure out what hte tune distance is for various type of matches
+//
+find_closest_or_exact_match: function(id, regex_preparsed_array, tune_distance) {
+    if(typeof(skip_fuzzy)==='undefined') tune_distance = 100;
+   var closest_distance=tune_distance;
+   var distance_measure;
+   var to_fuzzy_match;
+   var id_to_look_at;
+   var match_index=null;
+    for(var i = 0;i < regex_preparsed_array.length;i++){
+      id_to_look_at=regex_preparsed_array[i][0];
 
        parsed_id=this.preparse_asset_id(id);
-       to_fuzzy_match=this.preparse_asset_id(fuzzy_matches[1]);
-        distance_measure=this.get_levi(parsed_id, to_fuzzy_match);
-
-
+       to_fuzzy_match=this.preparse_asset_id(id_to_look_at);
+       distance_measure=this.get_levi(parsed_id, to_fuzzy_match);
+    // console.log("distance: " + closest_distance + "(for " + parsed_id + ", to: " + to_fuzzy_match + ")");
         if (distance_measure < closest_distance)
         {
+          match_index=i;
           closest_distance=distance_measure;
           closest_asset_id=to_fuzzy_match;
         }
+    } // for
+    return match_index;
+}, // find_closes_or_exact_match
+
+// uses preparsed array
+// goes to index foudn by same or closest match then reads everything to the the 
+// next regex match
+// input is the 
+// [[ "WX-C9999-E", "before1 "," hello there how"], ["", "2are you", ""], ["WX-C7777-E", "before3 ", "i am fine"]];
+// e.g. [[x,y,z],[x,y,z]]
+// where x = matched asset id, y = contenet before, z = content after
+find_item_details_for_sow_id: function(idx, regex_preparsed_array) {
+  var component_info = "";
+  var parsed_id;
+  var in_block=true;
+  var all_content_for_asset_id=[];
+  var theline_arr=[];
+  component_info="";
+
+  all_content_for_asset_id[0]=regex_preparsed_array[idx][0];
+  component_info=regex_preparsed_array[idx][1] + " " + regex_preparsed_array[idx][2]  + ", ";
+  for(var i = idx+1;i < regex_preparsed_array.length;i++){
+    theline_arr=regex_preparsed_array[i];
+    // console.log(theline_arr);
+    if (theline_arr[0] === "")
+    {
+      // component if is before & after content
+       component_info += theline_arr[1] + " " + theline_arr[2] + ", ";
+      // only add comma if we're not the last item 
+
+       // if (i < regex_preparsed_array.length-1) {
+       //  if (regex_preparsed_array[i+1][0] === "") {
+       //    component_info += component_info + ", ";
+       //  }
+       // }
     }
-
-
-    // have we found the top level item e.g.  description blah (asset id) qty price etc....
-    reg='(.*)\(' + regExpEscape(id) + '\).*';
-
-      matches=theline.match(reg);
-
-      // yes so record this asset, now mark the fact we keep going
-       if (matches !== null) {
-        in_block = true;
-        all_content_for_asset_id[0] = id;
-        continue; }
-
-      // get all stuff before price / qty / etc.
-      if (in_block) {
-      reg='([ A-Za-z\t0-9\-]+)\t[0-9]+';
-      // reg='(.*)\t(.*)';
-        matches=theline.match(reg);
-        if (matches !== null) {
-          component_info = component_info + ", " + matches[1];
-          continue;
-        }
-        // test for the next top line i.e. an asset descripton with (xxxxxx) in the line
-         matches=theline.match(/.*\([A-Za-z0-9\-]+\).*/)
-         // we have now found the next top line item so finish this search
-         if (matches !== null) { 
-          in_block=false;
-          break;
-         }
-      }
+    else {
+      break;
+    }
    } // for
   all_content_for_asset_id[1]=component_info;
   return all_content_for_asset_id

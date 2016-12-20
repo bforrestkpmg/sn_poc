@@ -81,21 +81,19 @@ describe("OrchParser", function() {
 			var input_str = "before1 1. hello there how\n2are you\nbefore3 3.i am fine";
 			var expected_arr = [[ "1.", "before1 "," hello there how"], ["", "2are you", ""], ["3.", "before3 ", "i am fine"]]
 			var res=OrchParser.preparse_array_of_strings("[0-9]\\.", input_str);
-			console.log(res);
-			console.log(expected_arr);
 			var compare_res=compare_arrays(res, expected_arr);
 			expect(compare_res).to.equal(true);
 		});
 		it("should handle empty strings", function() {
 			var input_str = "1. hello there how\n\n";
-			var expected_arr = [["1."," hello there how"],["",""],["",""]];
+			var expected_arr = [["1.", "", " hello there how"], ["", "", ""], ["", "", ""]];
 			var res=OrchParser.preparse_array_of_strings("[0-9]\\.", input_str);
 			var compare_res=compare_arrays(res, expected_arr);
 			expect(compare_res).to.equal(true);
 		});
 		it("should handle not finding anything", function() {
 			var input_str = "hello there how\nare you\ni am fine";
-			var expected_arr = [["","hello there how"],["","are you"],["","i am fine"]];
+			var expected_arr = [["", "hello there how", ""], ["", "are you", ""], ["", "i am fine", ""]];
 			var res=OrchParser.preparse_array_of_strings("[0-9]\\.", input_str);
 			var compare_res=compare_arrays(res, expected_arr);
 			expect(compare_res).to.equal(true);
@@ -119,14 +117,63 @@ describe("OrchParser", function() {
 				expect(compare_res).to.equal(true);
 			});
 		}); // find_item_details_for-sowid
-				describe("get components for asset ids", function(){
-					it("finds components in brackets below the current top line item for a specific id", function() {
-			var ip_str = "textbefore(WX-C9999-E)	2	$1,837.33	$	3,674.66	$  176,383.68\nwsc4999 first line compnoent	2	$ 324.44	$ 648.88	$  31,146.24\nwsc4999 2nd line	2	$324.44	$648.88	$31,146.24\nnew item(ASA6666)	2	$-	$-	$ -\n new item 4d line(WS-c4999-F)	2	$1,837.33	$3,674.66	$  176,383.68\nwsc49999f 2ndline	2	$324.44	$648.88	$31,146.24\nnothing to see here	9	$ 470.97 	$   1,883.88	$  90,426.24\n" 
-				var res=OrchParser.find_item_details_for_sow_id("WX-C9999-E", ip_str, true);
-				var expected=["WX-C9999-E", ", wsc4999 first line compnoent, wsc4999 2nd line"];
+		describe("get components for asset ids", function(){
+				it("generates list of closest", function() {
+
+			var input_arry = [[ "1.", "before1 "," hello there how"], ["", "2are you", ""], ["3.", "before3 ", "i am fine"]];
+			var res=OrchParser.find_closest_or_exact_match("3.", input_arry);
+			expect(res).to.equal(2);
+			});
+			it("generates list of closest when not precisely the same", function() {
+
+			var input_arry = [[ "WX-C9999-E", "before1 "," hello there how"], ["", "2are you", ""], ["WX-C7777-E", "before3 ", "i am fine"]];
+			var res=OrchParser.find_closest_or_exact_match("cat7777", input_arry);
+			expect(res).to.equal(2);
+			});
+			it("generates list of closest when similar", function() {
+
+			var input_arry = [[ "WX-C9999-E", "before1 "," hello there how"], ["", "2are you", ""], ["WX-C7777-E", "before3 ", "i am fine"]];
+			var res=OrchParser.find_closest_or_exact_match("CAT7777", input_arry, 5);
+			expect(res).to.equal(2);
+			});
+
+			it("finds components in brackets below the current top line item for a specific id", function() {
+			var ip_arr = [
+			["","somecontent",""],
+			["(WX-C9999-E)","Firewall - Infrastructure - New - Complex","after"],
+			["","component 1",""],
+			["","component 2",""],
+			["(WX-C88888-E)","blah before","blah after"],
+			["","blah2 before","blah2 after"]
+			];
+				var res=OrchParser.find_item_details_for_sow_id(1, ip_arr);
+				var expected=["(WX-C9999-E)", "Firewall - Infrastructure - New - Complex after, component 1 , component 2 , " ];
 				var compare_res=compare_arrays(res, expected);
 				expect(compare_res).to.equal(true);
 			});
+		it("finds components in brackets handling only 1 set of components", function() {
+			var ip_arr = [
+			["","somecontent",""],
+			["(WX-C9999-E)","Firewall - Infrastructure - New - Complex","after"],
+			["","component 1",""],
+			["","component 2",""]
+			];
+				var res=OrchParser.find_item_details_for_sow_id(1, ip_arr);
+				var expected=["(WX-C9999-E)", "Firewall - Infrastructure - New - Complex after, component 1 , component 2 , "  ];
+				var compare_res=compare_arrays(res, expected);
+				expect(compare_res).to.equal(true);
+			});
+				it("finds components in brackets handling no components", function() {
+			var ip_arr = [
+			["(WX-C9999-E)","Firewall - Infrastructure - New - Complex","after"]
+			];
+				var res=OrchParser.find_item_details_for_sow_id(0, ip_arr);
+				console.log(res);
+				var expected=["(WX-C9999-E)", "Firewall - Infrastructure - New - Complex after, " ];
+				var compare_res=compare_arrays(res, expected);
+				expect(compare_res).to.equal(true);
+			});
+
 			});
 			// describe("get all assets and all components", function(){
 			// 		it("for a list of ids, get the components for each", function() {
